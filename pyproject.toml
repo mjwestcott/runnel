@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "runnel"
+version = "0.1.0-alpha.2"
+description = "Distributed event processing for Python based on Redis Streams"
+authors = ["Matt Westcott <m.westcott@gmail.com>"]
+license = "LGPLv3"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+aredis = "^1.1.8"
+hiredis = "^1.0.1"
+pydantic = "^1.5.1"
+typer = "^0.3.0"
+structlog = "^20.1.0"
+colorama = "^0.4.3"
+# XXX: Temporarily using master until v2.0 released
+anyio = {git = "https://github.com/agronholm/anyio.git", branch = "master"}
+aiostream = "^0.4.1"
+
+# For the 'fast' bundle
+uvloop = { version = "^0.14.0", optional = true }
+xxhash = { version = "^1.4.4", optional = true }
+orjson = { version = "^3.2.1", optional = true }
+lz4 = { version = "^3.1.0", optional = true }
+croniter = "^0.3.34"
+pytz = "^2020.1"
+
+[tool.poetry.dev-dependencies]
+yapf = "^0.30.0"
+isort = "^4.3.21"
+flake8 = "^3.8.3"
+faker = "^4.1.1"
+pytest = "^5.4.3"
+pytest-asyncio = "^0.14.0"
+pytest-benchmark = "^3.2.3"
+sphinx = "^3.1.2"
+sphinx_rtd_theme = "^0.5.0"
+pytest-mock = "^3.2.0"
+freezegun = "^0.3.15"
+
+[tool.poetry.scripts]
+runnel = "runnel.cli:cli"
+
+[tool.poetry.extras]
+fast = ["uvloop", "xxhash", "orjson", "lz4"]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
