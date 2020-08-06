@@ -7,6 +7,7 @@ import anyio
 import structlog
 
 from runnel import context
+from runnel.discovery import autodiscover
 from runnel.exceptions import Misconfigured
 from runnel.executor import Executor
 from runnel.utils import base64uuid
@@ -77,6 +78,10 @@ class Worker:
         if self.started:
             raise Misconfigured("Worker already running")
         logger.info("starting-worker", processors=processors)
+
+        # Import all modules likely to contain Runnel objects (e.g. processors, tasks)
+        # that must be registered with the app, defaults to importing "**/streams.py".
+        autodiscover(self.app)
 
         # Load lua scripts.
         for script in (Path(__file__).parent / "lua").glob("*.lua"):

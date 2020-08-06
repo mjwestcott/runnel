@@ -262,6 +262,7 @@ class App:
             x = name or f.__name__
             assert x not in self.processors
 
+            logger.debug("found-processor", name=x)
             self.processors[x] = Processor(
                 stream=stream,
                 f=f,
@@ -306,6 +307,7 @@ class App:
                     logger.info("running-task", name=f.__name__)
                     await f()
 
+            logger.debug("found-task", name=f.__name__)
             return self._task(wrapper)
 
         return decorator(func) if func is not None else decorator
@@ -342,6 +344,7 @@ class App:
                             logger.info("spawning-timer-task", name=f.__name__)
                             await tg.spawn(f, *args)
 
+            logger.debug("found-timer", name=f.__name__)
             return self._task(timer_spawner)
 
         return decorator
@@ -389,6 +392,7 @@ class App:
                             logger.info("spawning-cron-task", name=f.__name__)
                             await tg.spawn(f, *args)
 
+            logger.debug("found-cron", name=f.__name__)
             return self._task(cron_spawner)
 
         return decorator

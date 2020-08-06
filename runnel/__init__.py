@@ -5,7 +5,6 @@ from runnel.interfaces import Compressor, Middleware, Serializer
 from runnel.record import Record
 from runnel.stream import Stream
 from runnel.types import Event, Partition
-from runnel.worker import Worker
 
 __all__ = [
     "App",
@@ -14,7 +13,6 @@ __all__ = [
     "Partition",
     "Event",
     "Events",
-    "Worker",
     "Serializer",
     "Compressor",
     "Middleware",

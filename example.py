@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from runnel import App, Record, Worker
+from runnel import App, Record
 
 app = App(name="example")
 
@@ -22,12 +22,8 @@ async def sender():
     await orders.send(Order(order_id=1, created_at=datetime.utcnow(), amount=9.99))
 
 
+# Run the app from the CLI via `$ runnel worker example:app`
 @app.processor(orders)
 async def printer(events):
     async for order in events.records():
         print(f"processed {order.amount}")
-
-
-if __name__ == "__main__":
-    # Normally you would use the CLI instead via `$ runnel worker example:app`
-    Worker(app).start()
