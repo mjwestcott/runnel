@@ -36,7 +36,7 @@ class Settings(BaseSettings):
         installed (use the ``runnel[fast]`` bundle to install automatically), in which
         case ``FastJSONSerializer``.
     default_partition_count : int
-        How many partitions to create. Default: ``32``.
+        How many partitions to create. Default: ``16``.
     default_partition_size : int
         The max length of each partition. (Implemented approximately via Redis' MAXLEN
         option to XACK.) Represents the size of the buffer in case processors are
@@ -94,7 +94,7 @@ class Settings(BaseSettings):
     testing: bool = False
 
     # Stream defaults
-    default_partition_count: int = 32
+    default_partition_count: int = 16
     default_partition_size = 50_000
     default_serializer: PyObject = "runnel.serialization.default"
     default_hasher: PyObject = "runnel.hashing.default"

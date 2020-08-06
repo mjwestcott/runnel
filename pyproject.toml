@@ -13,17 +13,17 @@ pydantic = "^1.5.1"
 typer = "^0.3.0"
 structlog = "^20.1.0"
 colorama = "^0.4.3"
+aiostream = "^0.4.1"
+croniter = "^0.3.34"
+pytz = "^2020.1"
 # XXX: Temporarily using master until v2.0 released
 anyio = {git = "https://github.com/agronholm/anyio.git", branch = "master"}
-aiostream = "^0.4.1"
 
 # For the 'fast' bundle
 uvloop = { version = "^0.14.0", optional = true }
 xxhash = { version = "^1.4.4", optional = true }
 orjson = { version = "^3.2.1", optional = true }
 lz4 = { version = "^3.1.0", optional = true }
-croniter = "^0.3.34"
-pytz = "^2020.1"
 
 [tool.poetry.dev-dependencies]
 yapf = "^0.30.0"
