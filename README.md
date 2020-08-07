@@ -2,6 +2,8 @@
 
 Distributed event processing for Python based on Redis Streams.
 
+https://runnel.dev
+
 Runnel allows you to easily create scalable stream processors, which operate on
 partitions of event streams in Redis. Runnel takes care of assigning partitions
 to workers and acknowledging events automatically, so you can focus on your
