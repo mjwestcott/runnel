@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Architecture &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Rebalance" href="rebalance.html" />
+    <link rel="prev" title="Motivation" href="motivation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide.html"> Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html"> Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motivation.html"> Motivation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sending-events">Sending Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#processing-events">Processing Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#redis-keys">Redis Keys</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rebalance.html"> Rebalance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html"> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Architecture</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/architecture.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="architecture">
+<h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
+<p>This document describes the under-the-hood architecture in detail. For a guide on how to
+use this library, see the <a class="reference internal" href="guide.html#guide"><span class="std std-ref">Guide</span></a> instead.</p>
+<div class="section" id="sending-events">
+<h2>Sending Events<a class="headerlink" href="#sending-events" title="Permalink to this headline">¶</a></h2>
+<p>Events are stored in a set of Redis keys. One <a class="reference internal" href="reference.html#runnel.App.stream" title="runnel.App.stream"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.App.stream</span></code></a> corresponds to
+many Redis stream data structures, controlled by the <code class="docutils literal notranslate"><span class="pre">partition_count</span></code> setting. They
+can be sent from your Python application code via <a class="reference internal" href="reference.html#runnel.Stream.send" title="runnel.Stream.send"><code class="xref py py-meth docutils literal notranslate"><span class="pre">runnel.Stream.send()</span></code></a> or from the
+shell via the CLI <a class="reference internal" href="cli.html#runnel.cli.send" title="runnel.cli.send"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.cli.send</span></code></a> or <a class="reference internal" href="cli.html#runnel.cli.sendmany" title="runnel.cli.sendmany"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.cli.sendmany</span></code></a> commands. For
+every record to send, the correct partition is computed by hashing the <code class="docutils literal notranslate"><span class="pre">partition_key</span></code>.
+Each partition has a maximum length, controlled by the <code class="docutils literal notranslate"><span class="pre">partition_size</span></code> setting. It is
+implemented using the <code class="docutils literal notranslate"><span class="pre">MAXLEN</span></code> option to <code class="docutils literal notranslate"><span class="pre">XADD</span></code> (see the <a class="reference external" href="https://redis.io/commands/xadd">Redis docs</a>).</p>
+</div>
+<div class="section" id="processing-events">
+<h2>Processing Events<a class="headerlink" href="#processing-events" title="Permalink to this headline">¶</a></h2>
+<p>Events are then processed by your <a class="reference internal" href="reference.html#runnel.App.processor" title="runnel.App.processor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.App.processor</span></code></a> functions, which are run
+by workers. This is the detailed breakdown of entities spawned by a single worker (each
+box is implemented as an <a class="reference external" href="https://docs.python.org/3/library/asyncio.html">asyncio task</a>):</p>
+<img alt="_images/runnel-task-graph.png" src="_images/runnel-task-graph.png" />
+<p>Worker: Created by running <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">runnel</span> <span class="pre">worker</span></code> in your shell. By default, will create an
+Executor for every processor you have created in your runnel application. (But you can
+specify a subset of processors if you wish, see <a class="reference internal" href="cli.html#runnel.cli.worker" title="runnel.cli.worker"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.cli.worker</span></code></a>.)</p>
+<p>Leadership: A periodic task to choose a worker to become the ‘leader’, which means it is
+responsible for running background tasks for which <code class="docutils literal notranslate"><span class="pre">on_leader=True</span></code>.</p>
+<p>Executors: Responsible for executing a user-provided <a class="reference internal" href="reference.html#runnel.App.processor" title="runnel.App.processor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.App.processor</span></code></a>
+function over partitions of the stream. Newly created executors will trigger a
+<a class="reference internal" href="rebalance.html#rebalance"><span class="std std-ref">Rebalance</span></a> so that partitions are evenly distributed between workers. Will acquire
+locks implemented in Redis for every partition it is assigned.</p>
+<p>Heartbeat: A periodic task to emit a heartbeat (stored in Redis) every so often, to
+communicate to other workers that it is alive and well. If an executor’s heartbeat
+expires, it will be considered dead and its partitions will be reassigned to other
+workers. Also responsible for extending the executors’ partition locks.</p>
+<p>Maintenance: A periodic task to check whether any other workers have died, in which case
+a <a class="reference internal" href="rebalance.html#rebalance"><span class="std std-ref">Rebalance</span></a> is triggered.</p>
+<p>Control: Listens for messages in a ‘control’ stream in Redis which announces the
+creation and departure of workers. Notifies the executor that a <a class="reference internal" href="rebalance.html#rebalance"><span class="std std-ref">Rebalance</span></a> should
+begin.</p>
+<p>Runner: Responsible for concurrently running one Fetcher and multiple Consumers (one for
+every partition of the stream currently owned by the Executor).</p>
+<p>Fetcher: A long-running task to retrieve events from Redis. Spawns multiple Fetch tasks.</p>
+<p>Fetch: A task which calls the Redis <a class="reference external" href="https://redis.io/commands/xreadgroup">XREADGROUP</a>
+command to retrieve events from a set of partitions and store them in internal buffers.
+Will block if no events are currently pending.</p>
+<p>Consumers: Each of these tasks calls the user-provided <a class="reference internal" href="reference.html#runnel.App.processor" title="runnel.App.processor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.App.processor</span></code></a>
+function for a single partition of the stream, passing it an Events generator.
+Responsible for implementing the exception policy (see <a class="reference internal" href="guide.html#exception-handling"><span class="std std-ref">Exception handling</span></a>) in
+case the processor function fails.</p>
+<p>Processor: The user-provided processor function, responsible for iterating over the
+Events generator and performing arbitrary logic. Each task will receive events for a
+single partition of the stream.</p>
+<p>Events: A generator of events, passed to the user-provided <a class="reference internal" href="reference.html#runnel.App.processor" title="runnel.App.processor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.App.processor</span></code></a>
+function. Will retrieve events that have been fetched from Redis from an internal
+buffer, pass them through any <a class="reference internal" href="reference.html#runnel.interfaces.Middleware" title="runnel.interfaces.Middleware"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.interfaces.Middleware</span></code></a> defined for the
+stream, yield them, and then <a class="reference external" href="https://redis.io/commands/xack">XACK</a> them so they are
+processed only once.</p>
+<p>Waiter: A task which waits for a signal to shutdown a Consumer. It will be triggered if
+the consumer’s partition is no longer owned by this Executor due to a <a class="reference internal" href="rebalance.html#rebalance"><span class="std std-ref">Rebalance</span></a>.</p>
+</div>
+<div class="section" id="redis-keys">
+<h2>Redis Keys<a class="headerlink" href="#redis-keys" title="Permalink to this headline">¶</a></h2>
+<p>Assume that we are running the following application:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Record</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;myapp&quot;</span><span class="p">,</span> <span class="n">redis_url</span><span class="o">=</span><span class="s2">&quot;redis://127.0.0.1&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="n">orders</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="s2">&quot;orders&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">Order</span><span class="p">,</span> <span class="n">partition_by</span><span class="o">=</span><span class="s2">&quot;order_id&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following Redis keys will be used:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">__strm:example.orders.{partition_number}</span></code></dt><dd><p>The partitioned stream data structures for events. <cite>partition_number</cite> is an integer
+from 0 to 1-<cite>partition_count</cite>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">__memb:example.orders.printer</span></code></dt><dd><p>A string key holding JSON-encoded membership data for existing executors. Contains
+the mapping from executors to the partitions they have been assigned.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">__ctrl:example.orders.printer</span></code></dt><dd><p>A stream for communicating control messages between executors. Used to announce
+joining/leaving workers which triggers a rebalance.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">__lock:example.orders.printer.{partition_number}</span></code></dt><dd><p>A lock for every stream partition. Should be owned by the assigned executor. Must be
+owned before processing a partition.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">__lock:example.orders.printer.admin</span></code></dt><dd><p>A lock to protect atomic admin operations, such as changing the partition
+assignments.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">__beat:example.orders.printer.{executor_id}</span></code></dt><dd><p>An expiring string key to indicate that an executor is still alive. <cite>executor_id</cite> is
+a uuid.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">__lead:example</span></code></dt><dd><p>Holds the name of the current lead worker, which is responsible for running
+background tasks for which <code class="docutils literal notranslate"><span class="pre">on_leader=True</span></code>.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rebalance.html" class="btn btn-neutral float-right" title="Rebalance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="motivation.html" class="btn btn-neutral float-left" title="Motivation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

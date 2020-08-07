@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>runnel.settings &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide.html"> Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html"> Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../motivation.html"> Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html"> Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rebalance.html"> Rebalance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html"> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>runnel.settings</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for runnel.settings</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">tzinfo</span>
+
+<span class="kn">import</span> <span class="nn">pytz</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseSettings</span><span class="p">,</span> <span class="n">PyObject</span>
+
+<span class="kn">from</span> <span class="nn">runnel.constants</span> <span class="kn">import</span> <span class="n">ExceptionPolicy</span>
+
+
+<div class="viewcode-block" id="Settings"><a class="viewcode-back" href="../../reference.html#runnel.settings.Settings">[docs]</a><span class="k">class</span> <span class="nc">Settings</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class should not be used directly, but acts as a container for application</span>
+<span class="sd">    settings, configured via environment variables (e.g. `RUNNEL_LOG_LEVEL=debug`) or as</span>
+<span class="sd">    kwargs to the App object.</span>
+
+<span class="sd">    Many of the settings represent defaults for processors or streams and can be</span>
+<span class="sd">    overridden at object initialisation time.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    redis_url : str</span>
+<span class="sd">        The URL to pass to aredis.StrictRedis.from_url. Default: ``&quot;127.0.0.1:6379&quot;``.</span>
+<span class="sd">    log_format : str</span>
+<span class="sd">        Either ``&quot;json&quot;`` or ``&quot;console&quot;`` to specify the log output format.</span>
+<span class="sd">    log_level : str</span>
+<span class="sd">        The minimum log level to display: one of ``&quot;debug&quot;``, ``&quot;info&quot;``, ``&quot;warning&quot;``</span>
+<span class="sd">        is recommended.</span>
+<span class="sd">    autodiscover : str</span>
+<span class="sd">        The pattern for :func:`pathlib.Path.glob` to find modules containing</span>
+<span class="sd">        Runnel app-decorated functions (e.g. processors, tasks), which the worker must</span>
+<span class="sd">        import on startup. Will be called relative to current working directory. Can be</span>
+<span class="sd">        set to the empty string to disable. Default ``&#39;**/streams.py&#39;``.</span>
+<span class="sd">    timezone : tzinfo</span>
+<span class="sd">        The timezone to use by default for ``app.crontab`` schedules. Default: ``pytz.UTC``.</span>
+<span class="sd">    leadership_poll_interval : int (milliseconds)</span>
+<span class="sd">        How long to sleep between worker leadership election attempts. Default: ``4000``</span>
+<span class="sd">    testing : bool</span>
+<span class="sd">        Whether we are currently running the test suite.</span>
+<span class="sd">    default_serializer : Serializer</span>
+<span class="sd">        An object implementing the Serialzer interface which controls how records</span>
+<span class="sd">        are stored in the Redis streams. Default: ``JSONSerialzer`` unless ``orjson`` is</span>
+<span class="sd">        installed (use the ``runnel[fast]`` bundle to install automatically), in which</span>
+<span class="sd">        case ``FastJSONSerializer``.</span>
+<span class="sd">    default_partition_count : int</span>
+<span class="sd">        How many partitions to create. Default: ``16``.</span>
+<span class="sd">    default_partition_size : int</span>
+<span class="sd">        The max length of each partition. (Implemented approximately via Redis&#39; MAXLEN</span>
+<span class="sd">        option to XACK.) Represents the size of the buffer in case processors are</span>
+<span class="sd">        offline or cannot keep up with the event rate. Default: ``50_000``.</span>
+<span class="sd">    default_hasher: Callable[Any, int]</span>
+<span class="sd">        A function used to hash a record&#39;s partition key to decide which partition to</span>
+<span class="sd">        send it to. Defaults to md5 unless `xxhash` is installed (use the `runnel[fast]`</span>
+<span class="sd">        bundle to install automataically)</span>
+<span class="sd">    default_exception_policy : ExceptionPolicy</span>
+<span class="sd">        How to handle exceptions raised in the user-provided processor coroutine.</span>
+
+<span class="sd">        * ``HALT``: Raise the exception, halting execution of the affected partition.</span>
+<span class="sd">        * ``QUARANTINE``: Mark the affected partition as poisoned, and continue with others.</span>
+<span class="sd">        * ``IGNORE``: Suppress the exception and continue processing regardless.</span>
+
+<span class="sd">        Default: ``HALT``.</span>
+<span class="sd">    default_lock_expiry : int (seconds)</span>
+<span class="sd">        The duration of the lock on stream partitions owned by executors of this</span>
+<span class="sd">        processor. This controls the worst case lag a partition&#39;s events may</span>
+<span class="sd">        experience since other executors will have to wait acquire the lock in case</span>
+<span class="sd">        the owner has died. Default: ``120``.</span>
+<span class="sd">    default_read_timeout : int (milliseconds)</span>
+<span class="sd">        How long to stay blocked reading from Redis via XREADGROUP. Nothing depends</span>
+<span class="sd">        on this. Default: ``4000``.</span>
+<span class="sd">    default_prefetch_count : int</span>
+<span class="sd">        The maximum number of events to read from Redis per partition owned by an</span>
+<span class="sd">        executor. (If a single executor owns all 16 partitions in a stream and</span>
+<span class="sd">        prefetch_count is 10, then 160 events may be read at once.) Purely an</span>
+<span class="sd">        optimisation. Default: ``8``.</span>
+<span class="sd">    default_assignment_attempts : int</span>
+<span class="sd">        How many times to try to complete a rebalance operation (i.e. acquire our</span>
+<span class="sd">        declared partitions) before giving up. Default: ``32``.</span>
+<span class="sd">    default_assignment_sleep : float (seconds)</span>
+<span class="sd">        How long to wait between attempts to complete a rebalance operation.</span>
+<span class="sd">        Default: ``2``.</span>
+<span class="sd">    default_grace_period : float (seconds)</span>
+<span class="sd">        How long to wait for execution to complete gracefully before cancelling it.</span>
+<span class="sd">        Default: ``8``.</span>
+<span class="sd">    default_pool_size : int</span>
+<span class="sd">        How many concurrent connections to make to Redis to read events. Default: ``16``.</span>
+<span class="sd">    default_join_delay : int (seconds)</span>
+<span class="sd">        How long to wait after joining before attempting to acquire partitions.</span>
+<span class="sd">        Intended to mitigate a thundering herd problem of multiple workers joining</span>
+<span class="sd">        simultaneously and needing to rebalance multiple times. Default: ``2``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="n">env_prefix</span> <span class="o">=</span> <span class="s2">&quot;RUNNEL_&quot;</span>
+        <span class="n">case_insensitive</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">redis_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;redis://127.0.0.1:6379&quot;</span>
+    <span class="n">log_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;console&quot;</span>
+    <span class="n">log_level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span>
+    <span class="n">autodiscover</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;**/streams.py&quot;</span>
+    <span class="n">timezone</span><span class="p">:</span> <span class="n">tzinfo</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">UTC</span>
+    <span class="n">leadership_poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4000</span>
+    <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Stream defaults</span>
+    <span class="n">default_partition_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">default_partition_size</span> <span class="o">=</span> <span class="mi">50_000</span>
+    <span class="n">default_serializer</span><span class="p">:</span> <span class="n">PyObject</span> <span class="o">=</span> <span class="s2">&quot;runnel.serialization.default&quot;</span>
+    <span class="n">default_hasher</span><span class="p">:</span> <span class="n">PyObject</span> <span class="o">=</span> <span class="s2">&quot;runnel.hashing.default&quot;</span>
+
+    <span class="c1"># Processor defaults</span>
+    <span class="n">default_exception_policy</span><span class="p">:</span> <span class="n">ExceptionPolicy</span> <span class="o">=</span> <span class="n">ExceptionPolicy</span><span class="o">.</span><span class="n">HALT</span>
+    <span class="n">default_lock_expiry</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">default_read_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4000</span>
+    <span class="n">default_prefetch_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">default_assignment_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>
+    <span class="n">default_assignment_sleep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">default_grace_period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">default_pool_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">default_join_delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

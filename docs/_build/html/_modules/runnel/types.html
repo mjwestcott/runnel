@@ -1,0 +1,287 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>runnel.types &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide.html"> Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html"> Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../motivation.html"> Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html"> Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rebalance.html"> Rebalance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html"> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>runnel.types</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for runnel.types</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">anyio</span>
+<span class="kn">import</span> <span class="nn">structlog</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">runnel.stream</span> <span class="kn">import</span> <span class="n">Stream</span>
+    <span class="kn">from</span> <span class="nn">runnel.runner</span> <span class="kn">import</span> <span class="n">Runner</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Partition"><a class="viewcode-back" href="../../reference.html#runnel.Partition">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Partition</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The internal representation of a partition of the stream.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    number : int</span>
+<span class="sd">        Which numerical partition this is.</span>
+<span class="sd">    key : str</span>
+<span class="sd">        The Redis key under which the stream data structure is stored.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stream</span><span class="p">:</span> <span class="s2">&quot;Stream&quot;</span>
+    <span class="n">number</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">pointer</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;0-0&quot;</span>
+    <span class="n">lock</span><span class="p">:</span> <span class="n">anyio</span><span class="o">.</span><span class="n">Lock</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">anyio</span><span class="o">.</span><span class="n">create_lock</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Partition stream=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> i=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> pointer=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">partition_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># A new owner for this partition, reset the pointer so that Redis will return</span>
+        <span class="c1"># values from the pending entries list if any exist.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;0-0&quot;</span></div>
+
+
+<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../reference.html#runnel.Event">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Event</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The internal representation of an event in a stream. Will ordinarily by deserialized</span>
+<span class="sd">    into a Record type before it is acted upon: e.g. via ``async for record in</span>
+<span class="sd">    events.records():``. This low-level representation is also available if necessary.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    partition: Partition</span>
+<span class="sd">        The partition this event came from.</span>
+<span class="sd">    xid: bytes</span>
+<span class="sd">        The Redis stream ID.</span>
+<span class="sd">    data : Dict[bytes, bytes]</span>
+<span class="sd">        The keys and values retrieved from the Redis stream.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; @app.processor(order)</span>
+<span class="sd">    ... async def myproc(events):</span>
+<span class="sd">    ...     async for event in events:</span>
+<span class="sd">    ...         print(event.xid)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">runner</span><span class="p">:</span> <span class="s2">&quot;Runner&quot;</span>
+    <span class="n">partition</span><span class="p">:</span> <span class="s2">&quot;Partition&quot;</span>
+    <span class="n">group</span><span class="p">:</span> <span class="nb">bytes</span>
+    <span class="n">xid</span><span class="p">:</span> <span class="nb">bytes</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span>
+    <span class="n">recovering</span><span class="p">:</span> <span class="nb">bool</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">partition</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xid</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;RUNNEL_TESTING&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Event data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Event stream=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> partition=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> xid=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">xid</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,621 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Guide &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Introduction" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-app">The App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#defining-your-event-stream">Defining your event stream</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#structured-records">Structured records</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primitive-records">Primitive records</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-stream">The stream</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-send-events">How to send events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-processor">Creating a processor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic">Basic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#raw-events">Raw events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#batching">Batching</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#background-tasks">Background tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-a-worker">Running a worker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#acknowledgement">Acknowledgement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exception-handling">Exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-middleware">Creating middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html"> Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motivation.html"> Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html"> Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rebalance.html"> Rebalance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html"> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/guide.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="guide">
+<h1>Guide<a class="headerlink" href="#guide" title="Permalink to this headline">¶</a></h1>
+<p>Runnel is a distributed event processing framework for Python based on Redis Streams.</p>
+<p>It allows you to easily create scalable stream processors, which operate on strictly
+ordered partitions of event streams. Runnel takes care of assigning partitions to
+workers, and acknowledging events automatically, so you can focus on your application
+logic.</p>
+<p>Whereas traditional job queues do not provide ordering guarantees, Runnel is designed to
+process partitions of your event stream strictly in the order events are created.</p>
+<div class="section" id="the-app">
+<h2>The App<a class="headerlink" href="#the-app" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;myapp&quot;</span><span class="p">,</span> <span class="n">redis_url</span><span class="o">=</span><span class="s2">&quot;redis://127.0.0.1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The app is the starting point for your Runnel project. You need provide a name and a
+Redis URL. You will use it to define event streams and processors. Workers will run your
+app.</p>
+<p>The full set of kwargs can be found at <a class="reference internal" href="reference.html#runnel.settings.Settings" title="runnel.settings.Settings"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.settings.Settings</span></code></a>. The settings
+can be provided as environment variables, e.g. <code class="docutils literal notranslate"><span class="pre">RUNNEL_LOG_LEVEL=debug</span></code> or as kwargs
+to the app instance. Many of the settings are defaults and can be overridden on the
+stream or processor objects you will create.</p>
+</div>
+<div class="section" id="defining-your-event-stream">
+<h2>Defining your event stream<a class="headerlink" href="#defining-your-event-stream" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="structured-records">
+<h3>Structured records<a class="headerlink" href="#structured-records" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">Record</span>
+
+
+<span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">float</span>
+</pre></div>
+</div>
+<p>The Record class allows you to specify structured event types to be stored in your
+stream. It is implemented using <a class="reference external" href="https://pydantic-docs.helpmanual.io/">Pydantic</a> and
+they can be nested arbitrarily:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Redis streams are key-value data structures, storing both as bytes. By default, your
+records will be JSON-serialized to bytes and stored under a single ‘data’ key in the
+stream. This is a flexible solution and allows you to optionally compress your records
+too.</p>
+<p>You can provide your own serialisation and compression implementations (see
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.interfaces</span></code>)</p>
+</div>
+<div class="section" id="primitive-records">
+<h3>Primitive records<a class="headerlink" href="#primitive-records" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">,</span> <span class="n">primitive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">complete</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">purchased_by</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
+<p>You can opt out of complex records and use the native Redis key-value stream type by
+setting <code class="docutils literal notranslate"><span class="pre">primitive=True</span></code>. This allows you to benefit from optimisations such as delta
+compression (see <a class="reference external" href="http://antirez.com/news/128">http://antirez.com/news/128</a>), at the cost of not supporting nested
+values. Primitive records only support fields of <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">bytes</span></code>.</p>
+</div>
+<div class="section" id="the-stream">
+<h3>The stream<a class="headerlink" href="#the-stream" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">orders</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="s2">&quot;orders&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">Order</span><span class="p">,</span> <span class="n">partition_by</span><span class="o">=</span><span class="s2">&quot;order_id&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>An example stream is defined above. You need to give it a name, specify the Record type,
+and pick a field to partition by. When you create an event, Runnel will use your
+stream’s <code class="docutils literal notranslate"><span class="pre">hasher</span></code> to hash the chosen partition key and compute which partition to send
+it to.</p>
+<p>You can specify the stream’s <code class="docutils literal notranslate"><span class="pre">partition_count</span></code>. This controls the degree of
+parallelism in your processing. Every partition will be processed by a separate instance
+of your processor code. If you run multiple workers, the partitions will be distributed
+evenly between them. To maintain strictly ordered processing, only one processor will
+process a partition at one time.</p>
+<p>The stream’s <code class="docutils literal notranslate"><span class="pre">partition_size</span></code> controls the maximum length of each partition’s stream.
+It is implemented using the <code class="docutils literal notranslate"><span class="pre">MAXLEN</span></code> option to <code class="docutils literal notranslate"><span class="pre">XADD</span></code> (see the <a class="reference external" href="https://redis.io/commands/xadd">Redis docs</a>).</p>
+</div>
+<div class="section" id="how-to-send-events">
+<h3>How to send events<a class="headerlink" href="#how-to-send-events" title="Permalink to this headline">¶</a></h3>
+<p>Events can be sent as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Record</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;myapp&quot;</span><span class="p">,</span> <span class="n">redis_url</span><span class="o">=</span><span class="s2">&quot;redis://127.0.0.1&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">float</span>
+
+
+<span class="n">orders</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="s2">&quot;orders&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">Order</span><span class="p">,</span> <span class="n">partition_by</span><span class="o">=</span><span class="s2">&quot;order_id&quot;</span><span class="p">)</span>
+
+<span class="k">await</span> <span class="n">orders</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">Order</span><span class="p">(</span><span class="n">order_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">(),</span> <span class="n">amount</span><span class="o">=</span><span class="mf">9.99</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You can also use the command line interface to send events:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ runnel send example:orders <span class="s2">&quot;{\&quot;order_id\&quot;: 1, \&quot;created_at\&quot;: \&quot;2020-07-21T22:09:37Z\&quot; , \&quot;amount\&quot;: 99}&quot;</span>
+</pre></div>
+</div>
+<p>Or in bulk (assuming ‘myapp/example.py’ includes a stream called ‘actions’):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">echo</span> <span class="s2">&quot;{\&quot;user_id\&quot;: 1, \&quot;type\&quot;: \&quot;signup\&quot;}&quot;</span> &gt;&gt; data.jsonl
+$ <span class="nb">echo</span> <span class="s2">&quot;{\&quot;user_id\&quot;: 2, \&quot;type\&quot;: \&quot;signup\&quot;}&quot;</span> &gt;&gt; data.jsonl
+$ runnel sendmany myapp.example:actions data.jsonl
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="creating-a-processor">
+<h2>Creating a processor<a class="headerlink" href="#creating-a-processor" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="basic">
+<h3>Basic<a class="headerlink" href="#basic" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is where your application logic is implemented. By specifying <code class="docutils literal notranslate"><span class="pre">events.records()</span></code>
+you are requesting that events are automatically deserialized and received as
+<a class="reference internal" href="reference.html#runnel.Record" title="runnel.Record"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.Record</span></code></a> objects.</p>
+</div>
+<div class="section" id="raw-events">
+<h3>Raw events<a class="headerlink" href="#raw-events" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want access to the low-level :attr`runnel.Event` object, you can omit
+the <code class="docutils literal notranslate"><span class="pre">.records()</span></code> call and iterate over the events directly.</p>
+</div>
+<div class="section" id="batching">
+<h3>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">orders</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">within</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want to maximize your processing throughput and your application logic can
+support it, you can enable batching of events. <code class="docutils literal notranslate"><span class="pre">events.take(10,</span> <span class="pre">within=2)</span></code> means take
+10 events at a time, but give up after 2 seconds and yield however many are available.
+This is intended to support logic which benefits from processing multiple events at
+once, e.g. bulk loading records into a database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Batching of events is separate to prefetching events from Redis. Prefetching of
+multiple events is enabled by default because it greatly benefits efficiency (you
+can control it via the <code class="docutils literal notranslate"><span class="pre">prefetch_count</span></code> setting, default=8). Prefetched events are
+buffered inside Runnel workers before they are yielded to your processor. Batching
+controls how those events are yielded: either individually (the default) or as a
+list of n events (using <code class="docutils literal notranslate"><span class="pre">events.take(n,</span> <span class="pre">within=1)</span></code>).</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Runnel acks events after every iteration through the event generator loop. When
+using batching, this means the entire batch will be acked at once. As a result, you
+must process the batch as a single unit atomically. If you iterate over the events
+in a batch one-at-a-time and you fail half-way through, then the entire batch will
+be considered failed (and handled according to your <a class="reference internal" href="reference.html#runnel.constants.ExceptionPolicy" title="runnel.constants.ExceptionPolicy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.constants.ExceptionPolicy</span></code></a>).
+This will lead to duplicate processing if the batch is retried, or dropped events if
+the batch is ignored.</p>
+</div>
+</div>
+</div>
+<div class="section" id="background-tasks">
+<h2>Background tasks<a class="headerlink" href="#background-tasks" title="Permalink to this headline">¶</a></h2>
+<p>You can define background tasks to run at startup using <a class="reference internal" href="reference.html#runnel.App.task" title="runnel.App.task"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.App.task</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">task</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;starting&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you only want to run the task on one worker, set <code class="docutils literal notranslate"><span class="pre">on_leader=True</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">on_leader</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;running once&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Runnel also supports periodic tasks via <a class="reference internal" href="reference.html#runnel.App.timer" title="runnel.App.timer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.App.timer</span></code></a> and
+<a class="reference internal" href="reference.html#runnel.App.crontab" title="runnel.App.crontab"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.App.crontab</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">timer</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">every_10_seconds</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;10 seconds passed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">crontab</span><span class="p">(</span><span class="s2">&quot;45 17 * * *&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">every_5_45_pm</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;It is 5:45pm UTC&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>They can also be configured to run only on the lead worker.</p>
+</div>
+<div class="section" id="running-a-worker">
+<h2>Running a worker<a class="headerlink" href="#running-a-worker" title="Permalink to this headline">¶</a></h2>
+<p>You can run the worker from your shell as follows (assuming you app is defined in
+<cite>example.py</cite>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ runnel worker example:app
+</pre></div>
+</div>
+<p>For the full set of command line options, see <a class="reference internal" href="cli.html#runnel.cli.worker" title="runnel.cli.worker"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.cli.worker</span></code></a>.</p>
+<p>By default, the worker will spawn concurrent tasks to run every processor that has been
+defined for your app. You can instead select specific processors:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ runnel worker myapp.example:myapp --processors<span class="o">=</span>myproc1,myproc2
+</pre></div>
+</div>
+</div>
+<div class="section" id="acknowledgement">
+<h2>Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permalink to this headline">¶</a></h2>
+<p>Events are acknowledged at the end of each iteration through the processing loop.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+        <span class="c1"># This event is acked now by the Runnel system before looping</span>
+        <span class="c1"># around and yielding a new event.</span>
+</pre></div>
+</div>
+<p>Since events are acked at the end of the processing block (not at the start), Runnel
+guarantees ‘at least once’ processing: if an event raises an exception midway through
+processing and is restarted, that section of processing will run twice.</p>
+</div>
+<div class="section" id="exception-handling">
+<h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this headline">¶</a></h2>
+<p>Generally speaking, exception handling is harder in systems that make guarantees about
+processing order, like Runnel. In a traditional job queue, you can mark jobs as failed
+and retry them later, possibly multiple times. If your events must be processed in a
+strict order, this option is not available.</p>
+<p>Runnel supports three exception policies: halt, quarantine, and ignore (see
+<a class="reference internal" href="reference.html#runnel.constants.ExceptionPolicy" title="runnel.constants.ExceptionPolicy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.constants.ExceptionPolicy</span></code></a>), which can be configured per processor, e.g.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">,</span> <span class="n">exception_policy</span><span class="o">=</span><span class="n">ExceptionPolicy</span><span class="o">.</span><span class="n">HALT</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">failer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ExceptionPolicy.HALT</span></code></p></li>
+</ol>
+<p>Let the exception propagate, halting execution of the affected partition. This is the
+default, because it guarantees that your events will not be processed out of order. The
+affected partition will be reassigned to another worker, which will likely experience
+the same exception and also halt. This will eventually bring down your cluster of
+workers. Manual intervention is required: you must fix the offending event and restart
+your workers.</p>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">ExceptionPolicy.QUARANTINE</span></code></p></li>
+</ol>
+<p>Mark the affected partition as poisoned, and continue processing all others. This is
+similar to halting, but only affects the partition in which a failing event was found.
+This option limits the impact of a single bad event, because only one partition will be
+stalled. Nonetheless, you must manually intervene by fixing the offending event and
+restarting your workers to ensure it is reassigned.</p>
+<p>Since this policy will not kill your worker, you must have a notification system in
+place to alert you of the need to fix the broken partition. (This is why it’s not the
+default.)</p>
+<ol class="arabic simple" start="3">
+<li><p><code class="docutils literal notranslate"><span class="pre">ExceptionPolicy.IGNORE</span></code></p></li>
+</ol>
+<p>Suppress the exception and continue processing regardless. This option ensures that your
+processors always make forward progress, which is suitable for some use cases (e.g. you
+are implementing an approximate counter and it’s more important that it’s up-to-date
+than that it’s accurate).</p>
+<p>This option can also be coupled with the builtin <code class="docutils literal notranslate"><span class="pre">DeadLetterMiddleware</span></code>, to forward
+failed events to a separate stream, to ensure that no events are lost. See below for an
+example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Record</span><span class="p">,</span> <span class="n">ExceptionPolicy</span>
+<span class="kn">from</span> <span class="nn">runnel.middleware</span> <span class="kn">import</span> <span class="n">DeadLetterMiddleware</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Action</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="n">actions</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="s2">&quot;actions&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">Action</span><span class="p">,</span> <span class="n">partition_by</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
+<span class="n">dead_letter</span> <span class="o">=</span> <span class="n">DeadLetterMiddleware</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">actions</span><span class="p">)</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">exception_policy</span><span class="o">=</span><span class="n">ExceptionPolicy</span><span class="o">.</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">dead_letter</span><span class="p">])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">proc</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+        <span class="k">pass</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">dead_letter</span><span class="o">.</span><span class="n">sink</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">dead</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-middleware">
+<h2>Creating middleware<a class="headerlink" href="#creating-middleware" title="Permalink to this headline">¶</a></h2>
+<p>The dead-letter feature above is an example of custom middleware. Middleware are objects
+with a <code class="docutils literal notranslate"><span class="pre">handler</span></code> method, which is an async generator. They are intended to support
+sharing common reusable logic between many processors.</p>
+<p>The handler methods of a middleware chain form a processing pipeline which runs over
+events before they are yielded to the final processor function. Each handler is passed
+the previous handler in the pipeline (called ‘parent’).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">runnel.interfaces</span> <span class="kn">import</span> <span class="n">Middleware</span>
+
+<span class="k">class</span> <span class="nc">Printer</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">x</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">mystream</span><span class="p">,</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">Printer</span><span class="p">()])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">proc</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some of Runnel’s internal functionality is implemented using middleware. They can be
+found <a class="reference external" href="https://github.com/mjwestcott/runnel/tree/master/runnel/middleware">here</a>.</p>
+</div>
+<p>Since processors can elect to receive a batch of events (see <a class="reference internal" href="#batching"><span class="std std-ref">Batching</span></a>), your
+middleware handlers need to support both individual <a class="reference internal" href="reference.html#runnel.Event" title="runnel.Event"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.Event</span></code></a> objects and
+batches of them:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">Event</span>
+
+
+<span class="k">class</span> <span class="nc">Noop</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">Event</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span>
+            <span class="k">yield</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>Post-processing logic can be added below, in a finally clause. This allows you to
+respond to errors further up the chain (e.g. in the final processor code):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">x</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">logic</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This is needed because a <code class="docutils literal notranslate"><span class="pre">GeneratorExit</span></code> exception will be thrown into the yield point
+if an exception is raised in the calling code. (Also note that async generator
+finalization is scheduled by the Python runtime asynchronously, but the Runnel framework
+ensures it has finished before restarting a processor function.)</p>
+<p>If you only want to know if an exception was raised further up the chain, you can use
+the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">x</span>
+        <span class="k">except</span> <span class="ne">GeneratorExit</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">cleanup</span><span class="p">()</span>
+            <span class="k">raise</span>
+</pre></div>
+</div>
+<p>(Note: Python requires that <code class="docutils literal notranslate"><span class="pre">GeneratorExit</span></code> it not ignored, so it must be reraised
+here to avoid a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>)</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

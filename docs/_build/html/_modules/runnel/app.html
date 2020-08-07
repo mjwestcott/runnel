@@ -1,0 +1,601 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>runnel.app &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide.html"> Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html"> Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../motivation.html"> Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html"> Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rebalance.html"> Rebalance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html"> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>runnel.app</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for runnel.app</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">anyio</span>
+<span class="kn">import</span> <span class="nn">structlog</span>
+<span class="kn">from</span> <span class="nn">aredis</span> <span class="kn">import</span> <span class="n">StrictRedis</span>
+
+<span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">context</span>
+<span class="kn">from</span> <span class="nn">runnel.logging</span> <span class="kn">import</span> <span class="n">init_logging</span>
+<span class="kn">from</span> <span class="nn">runnel.processor</span> <span class="kn">import</span> <span class="n">Processor</span>
+<span class="kn">from</span> <span class="nn">runnel.settings</span> <span class="kn">import</span> <span class="n">Settings</span>
+<span class="kn">from</span> <span class="nn">runnel.stream</span> <span class="kn">import</span> <span class="n">Stream</span>
+<span class="kn">from</span> <span class="nn">runnel.utils</span> <span class="kn">import</span> <span class="n">seconds_until</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="App"><a class="viewcode-back" href="../../reference.html#runnel.App">[docs]</a><span class="k">class</span> <span class="nc">App</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the main abstraction provided by Runnel. Use the :meth:`~.stream` and</span>
+<span class="sd">    :meth:`~.processor` methods to define partitioned event streams and processors</span>
+<span class="sd">    respectively. Apps will be run by workers via the CLI.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        An app identifier. Will be used as a component of the Redis keys for the</span>
+<span class="sd">        under-the-hood data structures.</span>
+<span class="sd">    kwargs : Dict</span>
+<span class="sd">        Any of the settings found in :mod:`runnel.settings` to override any options</span>
+<span class="sd">        provided by environment variables.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from runnel import App, Record</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; app = App(</span>
+<span class="sd">    ...     name=&quot;example&quot;,</span>
+<span class="sd">    ...     log_level=&quot;info&quot;,</span>
+<span class="sd">    ...     redis_url=&quot;127.0.0.1:6379&quot;,</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    Specify your event types using the Record class:</span>
+
+<span class="sd">    &gt;&gt;&gt; class Order(Record):</span>
+<span class="sd">    ...     order_id: int</span>
+<span class="sd">    ...     created_at: datetime</span>
+<span class="sd">    ...     amount: int</span>
+<span class="sd">    ...     item_ids: List[int]</span>
+
+<span class="sd">    Streams are configured to be partitioned by a chosen key.</span>
+
+<span class="sd">    &gt;&gt;&gt; orders = app.stream(&quot;orders&quot;, record=Order, partition_by=&quot;order_id&quot;)</span>
+
+<span class="sd">    Processor functions iterate over the event stream and can rely on receiving events</span>
+<span class="sd">    in the order they were created per key.</span>
+
+<span class="sd">    &gt;&gt;&gt; @app.processor(orders)</span>
+<span class="sd">    ... async def printer(events):</span>
+<span class="sd">    ...     async for order in events.records():</span>
+<span class="sd">    ...         print(order.amount)</span>
+
+<span class="sd">    Under the hood, Runnel will take care of partitioning the stream to enable scalable</span>
+<span class="sd">    distributed processing. We also take care of concurrently running the async processor</span>
+<span class="sd">    functions -- one for every partition in your stream. This processing may be</span>
+<span class="sd">    distributed across many workers on different machines and Runnel will coordinate</span>
+<span class="sd">    ownership of partitions dynamically as workers join or leave.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redis</span> <span class="o">=</span> <span class="n">StrictRedis</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">redis_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Lua scripts, loaded by workers at startup.</span>
+
+        <span class="n">init_logging</span><span class="p">(</span>
+            <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">log_level</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">log_format</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_leader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">is_leader</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+<div class="viewcode-block" id="App.stream"><a class="viewcode-back" href="../../reference.html#runnel.App.stream">[docs]</a>    <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">record</span><span class="p">,</span>
+        <span class="n">partition_by</span><span class="p">,</span>
+        <span class="n">serializer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">partition_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">partition_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">hasher</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A set of partitioned Redis streams, containing events as structured Record types.</span>
+
+<span class="sd">        Kwargs, if provided, will override the default settings configured on the App</span>
+<span class="sd">        instance or via environment variables (see :mod:`runnel.settings`) for this</span>
+<span class="sd">        stream.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            An stream identifier. Will be used as a component of the Redis keys for the</span>
+<span class="sd">            under-the-hood data structures.</span>
+<span class="sd">        record: Type[Record]</span>
+<span class="sd">            A class that inherits from Record, which specifies the structure of the event</span>
+<span class="sd">            data this stream expects. See :class:`runnel.Record`.</span>
+<span class="sd">        partition_by : Union[str, Callable[Record, Any]]</span>
+<span class="sd">            A str representing an attribute of the Record type (or a callable to compute</span>
+<span class="sd">            a value) which should be used to partition events. For example, if your events</span>
+<span class="sd">            concern user activity and you want to process events in-order per user, you</span>
+<span class="sd">            might choose the &quot;user_id&quot; attribute to partition by.</span>
+<span class="sd">        serializer : Serializer</span>
+<span class="sd">            An object implementing the :class:`runnel.interfaces.Serializer` interface</span>
+<span class="sd">            which controls how records are stored in the Redis streams.</span>
+<span class="sd">        partition_count : int</span>
+<span class="sd">            How many partitions to create.</span>
+<span class="sd">        partition_size : int</span>
+<span class="sd">            The max length of each partition. (Implemented approximately via Redis&#39; MAXLEN</span>
+<span class="sd">            option to XACK.) Represents the size of the buffer in case processors are</span>
+<span class="sd">            offline or cannot keep up with the event rate.</span>
+<span class="sd">        hasher: Callable[Any, int]</span>
+<span class="sd">            A function used to hash the partition key to decide to which partition to</span>
+<span class="sd">            send a record.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from runnel import App, Record, JSONSerializer</span>
+<span class="sd">        ...</span>
+<span class="sd">        &gt;&gt;&gt; app = App(name=&quot;example&quot;)</span>
+<span class="sd">        ...</span>
+<span class="sd">        &gt;&gt;&gt; class Order(Record):</span>
+<span class="sd">        ...     order_id: int</span>
+<span class="sd">        ...     amount: int</span>
+
+<span class="sd">        Streams are configured to be partitioned by a chosen key.</span>
+
+<span class="sd">        &gt;&gt;&gt; orders = app.stream(</span>
+<span class="sd">        ...     name=&quot;orders&quot;,</span>
+<span class="sd">        ...     record=Order,</span>
+<span class="sd">        ...     partition_by=&quot;order_id&quot;,</span>
+<span class="sd">        ...     partition_count=16,</span>
+<span class="sd">        ...     serializer=JSONSerializer(),</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">serializer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">record</span><span class="o">.</span><span class="n">_primitive</span><span class="p">:</span>
+            <span class="n">serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_serializer</span>
+
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
+            <span class="n">app</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">record</span><span class="o">=</span><span class="n">record</span><span class="p">,</span>
+            <span class="n">partition_by</span><span class="o">=</span><span class="n">partition_by</span><span class="p">,</span>
+            <span class="n">serializer</span><span class="o">=</span><span class="n">serializer</span><span class="p">,</span>
+            <span class="n">partition_count</span><span class="o">=</span><span class="n">partition_count</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_partition_count</span><span class="p">,</span>
+            <span class="n">partition_size</span><span class="o">=</span><span class="n">partition_size</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_partition_size</span><span class="p">,</span>
+            <span class="n">hasher</span><span class="o">=</span><span class="n">hasher</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_hasher</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="App.processor"><a class="viewcode-back" href="../../reference.html#runnel.App.processor">[docs]</a>    <span class="k">def</span> <span class="nf">processor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">stream</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exception_policy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">middleware</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">lock_expiry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">read_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefetch_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">assignment_attempts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">assignment_sleep</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">grace_period</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">pool_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">join_delay</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A wrapper around an async Python function which iterates over a continuous event</span>
+<span class="sd">        stream.</span>
+
+<span class="sd">        Kwargs, if provided, will override the default settings configured on the App</span>
+<span class="sd">        instance or via environment variables (see :mod:`runnel.settings`) for this</span>
+<span class="sd">        processor.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Events are acknowledged at the end of every processing loop. This means that if</span>
+<span class="sd">        your processor crashed before completion, that section of work will be repeated</span>
+<span class="sd">        when the processor is restarted. Therefore Runnel provides &#39;at least once&#39;</span>
+<span class="sd">        semantics.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        exception_policy : ExceptionPolicy</span>
+<span class="sd">            How to handle exceptions raised in the user-provided processor coroutine.</span>
+
+<span class="sd">            * ``HALT``: Raise the exception, halting execution of the affected partition.</span>
+<span class="sd">            * ``QUARANTINE``: Mark the affected partition as poisoned, and continue with others.</span>
+<span class="sd">            * ``IGNORE``: Suppress the exception and continue processing regardless.</span>
+
+<span class="sd">            Default: ``HALT``.</span>
+<span class="sd">        middleware : List[Middleware]</span>
+<span class="sd">            A list of Middleware objects for managaing the data pipeline. Can be used to</span>
+<span class="sd">            implement custom exception handling (e.g. dead letter queues).</span>
+<span class="sd">        lock_expiry : int (seconds)</span>
+<span class="sd">            The duration of the lock on stream partitions owned by executors of this</span>
+<span class="sd">            processor. This controls the worst case lag a partition&#39;s events may</span>
+<span class="sd">            experience since other executors will have to wait acquire the lock in case</span>
+<span class="sd">            the owner has died.</span>
+<span class="sd">        read_timeout : int (milliseconds)</span>
+<span class="sd">            How long to stay blocked reading from Redis via XREADGROUP. Nothing depends</span>
+<span class="sd">            on this.</span>
+<span class="sd">        prefetch_count : int</span>
+<span class="sd">            The maximum number of events to read from Redis per partition owned by an</span>
+<span class="sd">            executor. (If a single executor owns all 16 partitions in a stream and</span>
+<span class="sd">            prefetch_count is 10, then 160 events may be read at once.) Purely an</span>
+<span class="sd">            optimisation.</span>
+<span class="sd">        assignment_attempts : int</span>
+<span class="sd">            How many times to try to complete a rebalance operation (i.e. acquire our</span>
+<span class="sd">            declared partitions) before giving up.</span>
+<span class="sd">        assignment_sleep : float (seconds)</span>
+<span class="sd">            How long to wait between attempts to complete a rebalance operation.</span>
+<span class="sd">        grace_period : float (seconds)</span>
+<span class="sd">            How long to wait for execution to complete gracefully before cancelling it.</span>
+<span class="sd">        pool_size : int</span>
+<span class="sd">            How many concurrent connections to make to Redis to read events.</span>
+<span class="sd">        join_delay : int (seconds)</span>
+<span class="sd">            How long to wait after joining before attempting to acquire partitions.</span>
+<span class="sd">            Intended to mitigate a thundering herd problem of multiple workers joining</span>
+<span class="sd">            simultaneously and needing to rebalance multiple times.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from runnel import App, Record</span>
+<span class="sd">        ...</span>
+<span class="sd">        &gt;&gt;&gt; app = App(name=&quot;example&quot;)</span>
+<span class="sd">        ...</span>
+<span class="sd">        &gt;&gt;&gt; class Order(Record):</span>
+<span class="sd">        ...     order_id: int</span>
+<span class="sd">        ...     amount: int</span>
+<span class="sd">        ...</span>
+<span class="sd">        &gt;&gt;&gt; orders = app.stream(name=&quot;orders&quot;, record=Order, partition_by=&quot;order_id&quot;)</span>
+<span class="sd">        ...</span>
+<span class="sd">        &gt;&gt;&gt; @app.processor(orders)</span>
+<span class="sd">        ... async def printer(events):</span>
+<span class="sd">        ...     async for order in events.records():</span>
+<span class="sd">        ...         print(order.amount)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;exception_policy&quot;</span><span class="p">:</span> <span class="n">exception_policy</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_exception_policy</span><span class="p">,</span>
+            <span class="s2">&quot;middleware&quot;</span><span class="p">:</span> <span class="n">middleware</span> <span class="ow">or</span> <span class="p">[],</span>
+            <span class="s2">&quot;lock_expiry&quot;</span><span class="p">:</span> <span class="n">lock_expiry</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_lock_expiry</span><span class="p">,</span>
+            <span class="s2">&quot;read_timeout&quot;</span><span class="p">:</span> <span class="n">read_timeout</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_read_timeout</span><span class="p">,</span>
+            <span class="s2">&quot;prefetch_count&quot;</span><span class="p">:</span> <span class="n">prefetch_count</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_prefetch_count</span><span class="p">,</span>
+            <span class="s2">&quot;assignment_attempts&quot;</span><span class="p">:</span> <span class="n">assignment_attempts</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_assignment_attempts</span><span class="p">,</span>
+            <span class="s2">&quot;assignment_sleep&quot;</span><span class="p">:</span> <span class="n">assignment_sleep</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_assignment_sleep</span><span class="p">,</span>
+            <span class="s2">&quot;grace_period&quot;</span><span class="p">:</span> <span class="n">grace_period</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_grace_period</span><span class="p">,</span>
+            <span class="s2">&quot;pool_size&quot;</span><span class="p">:</span> <span class="n">pool_size</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_pool_size</span><span class="p">,</span>
+            <span class="s2">&quot;join_delay&quot;</span><span class="p">:</span> <span class="n">join_delay</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_join_delay</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">assert</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;found-processor&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">Processor</span><span class="p">(</span>
+                <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span>
+                <span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">decorator</span></div>
+
+    <span class="k">def</span> <span class="nf">_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">on_leader</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span>
+
+        <span class="k">return</span> <span class="n">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+
+<div class="viewcode-block" id="App.task"><a class="viewcode-back" href="../../reference.html#runnel.App.task">[docs]</a>    <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">on_leader</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define an async function to run at worker startup.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        on_leader : bool</span>
+<span class="sd">            Whether to run the function only on one worker: the elected leader.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; @app.task</span>
+<span class="sd">        &gt;&gt;&gt; async def on_startup():</span>
+<span class="sd">        ...     print(&quot;starting&quot;)</span>
+
+<span class="sd">        If you want the task to run on only one worker:</span>
+
+<span class="sd">        &gt;&gt;&gt; @app.task(on_leader=True)</span>
+<span class="sd">        &gt;&gt;&gt; async def on_startup():</span>
+<span class="sd">        ...    print(f&quot;running once&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">on_leader</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leader</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;running-task&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="n">f</span><span class="p">()</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;found-task&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="p">(</span><span class="n">wrapper</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">decorator</span></div>
+
+<div class="viewcode-block" id="App.timer"><a class="viewcode-back" href="../../reference.html#runnel.App.timer">[docs]</a>    <span class="k">def</span> <span class="nf">timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">on_leader</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define an async function to be run at periodic intervals.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        interval : float (seconds)</span>
+<span class="sd">            How often the function executes in seconds.</span>
+<span class="sd">        on_leader : bool</span>
+<span class="sd">            Whether to run the function only on one worker: the elected leader.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; @app.timer(interval=10)</span>
+<span class="sd">        &gt;&gt;&gt; async def every_10_seconds():</span>
+<span class="sd">        ...     print(&quot;10 seconds passed&quot;)</span>
+
+<span class="sd">        If you want the task to run on only one worker:</span>
+
+<span class="sd">        &gt;&gt;&gt; app.timer(interval=5, on_leader=True)</span>
+<span class="sd">        &gt;&gt;&gt; async def every_5_seconds():</span>
+<span class="sd">        ...     print(&quot;5 seconds passed on the leader&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">timer_spawner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">async</span> <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">create_task_group</span><span class="p">()</span> <span class="k">as</span> <span class="n">tg</span><span class="p">:</span>
+                    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">on_leader</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leader</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;spawning-timer-task&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                            <span class="k">await</span> <span class="n">tg</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;found-timer&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="p">(</span><span class="n">timer_spawner</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">decorator</span></div>
+
+<div class="viewcode-block" id="App.crontab"><a class="viewcode-back" href="../../reference.html#runnel.App.crontab">[docs]</a>    <span class="k">def</span> <span class="nf">crontab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_leader</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define an async function to be run at the fixed times, defined by the Cron</span>
+<span class="sd">        format (see `&lt;https://crontab.guru/&gt;`_ for examples).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spec : str</span>
+<span class="sd">            The Cron spec defining fixed times to run the decorated function.</span>
+<span class="sd">        timezone : tzinfo</span>
+<span class="sd">            The timezone to be taken into account for the Cron jobs. If not set value</span>
+<span class="sd">            from :attr:`runnel.settings.Settings.timezone` will be taken.</span>
+<span class="sd">        on_leader : bool</span>
+<span class="sd">            Whether to run the function only on one worker: the elected leader.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; app.crontab(&quot;45 17 * * *&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; async def every_5_45_pm():</span>
+<span class="sd">        ...     print(&quot;It is 5:45pm UTC&quot;)</span>
+
+<span class="sd">        If you want the task to run on only one worker:</span>
+
+<span class="sd">        &gt;&gt;&gt; app.crontab(&quot;45 17 * * *&quot;, on_leader=True)</span>
+<span class="sd">        &gt;&gt;&gt; async def every_5_45_pm():</span>
+<span class="sd">        ...     print(&quot;It is 5:45pm UTC on the leader&quot;)</span>
+
+<span class="sd">        With a timezone specification:</span>
+
+<span class="sd">        &gt;&gt;&gt; @app.crontab(&quot;45 17 * * *&quot;, timezone=pytz.timezone(&#39;GMT&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; async def every_5_45_pm():</span>
+<span class="sd">        ...     print(&quot;It is 5:45pm in London&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">cron_spawner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_tz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">timezone</span> <span class="k">if</span> <span class="n">timezone</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">timezone</span>
+                <span class="k">async</span> <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">create_task_group</span><span class="p">()</span> <span class="k">as</span> <span class="n">tg</span><span class="p">:</span>
+                    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">seconds_until</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">_tz</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">on_leader</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leader</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;spawning-cron-task&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                            <span class="k">await</span> <span class="n">tg</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;found-cron&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="p">(</span><span class="n">cron_spawner</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">decorator</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

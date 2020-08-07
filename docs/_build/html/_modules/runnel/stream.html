@@ -1,0 +1,354 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>runnel.stream &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide.html"> Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html"> Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../motivation.html"> Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html"> Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rebalance.html"> Rebalance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html"> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>runnel.stream</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for runnel.stream</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">replace</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">structlog</span>
+
+<span class="kn">from</span> <span class="nn">runnel.exceptions</span> <span class="kn">import</span> <span class="n">Misconfigured</span>
+<span class="kn">from</span> <span class="nn">runnel.interfaces</span> <span class="kn">import</span> <span class="n">Serializer</span>
+<span class="kn">from</span> <span class="nn">runnel.record</span> <span class="kn">import</span> <span class="n">Record</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">runnel.app</span> <span class="kn">import</span> <span class="n">App</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Stream"><a class="viewcode-back" href="../../reference.html#runnel.Stream">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Stream</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A set of partitioned Redis streams, together representing a single logical event</span>
+<span class="sd">    stream.</span>
+
+<span class="sd">    Not intended to be used directly. Use :attr:`runnel.App.stream` instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">app</span><span class="p">:</span> <span class="s2">&quot;App&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">record</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Record</span><span class="p">]</span>
+    <span class="n">partition_by</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span>
+    <span class="n">serializer</span><span class="p">:</span> <span class="n">Serializer</span>  <span class="c1"># Not applicable for records with primitive=True.</span>
+    <span class="n">hasher</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">partition_count</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">partition_size</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">_primitive</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Misconfigured</span><span class="p">(</span><span class="s2">&quot;Cannot serialize primitive records&quot;</span><span class="p">)</span>
+
+        <span class="n">by</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">partition_by</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">by</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">by</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">__fields__</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Misconfigured</span><span class="p">(</span><span class="s2">&quot;Stream.partition_by must specify a record field&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@lru_cache</span>
+    <span class="k">def</span> <span class="nf">partition_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;__strm:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@lru_cache</span>
+    <span class="k">def</span> <span class="nf">all_partition_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">partition_key</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">partition_count</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">partition_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasher</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">partition_count</span>
+
+<div class="viewcode-block" id="Stream.send"><a class="viewcode-back" href="../../reference.html#runnel.Stream.send">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">records</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Record</span><span class="p">],</span> <span class="n">stream_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send records to partitions of the stream, according to their partition keys.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        records : Iterable[Record]</span>
+<span class="sd">            The records to send.</span>
+<span class="sd">        stream_ids : Optional[Iterable[str]]</span>
+<span class="sd">            A list of stream_ids corresponding to the records. Must be the same length</span>
+<span class="sd">            as records. If ``None``, then ``&quot;*&quot;`` will be used for all records. See</span>
+<span class="sd">            `&lt;https://redis.io/commands/xadd&gt;`_ for more details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stream_ids</span><span class="p">:</span>
+            <span class="n">stream_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">))]</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">stream_ids</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">redis</span><span class="o">.</span><span class="n">pipeline</span><span class="p">()</span> <span class="k">as</span> <span class="n">pipe</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">record</span><span class="p">,</span> <span class="n">stream_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">records</span><span class="p">,</span> <span class="n">stream_ids</span><span class="p">):</span>
+                <span class="k">await</span> <span class="n">pipe</span><span class="o">.</span><span class="n">xadd</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compute_key</span><span class="p">(</span><span class="n">record</span><span class="p">)),</span>
+                    <span class="n">entry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">record</span><span class="p">),</span>
+                    <span class="n">max_len</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">partition_size</span><span class="p">,</span>
+                    <span class="n">approximate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">stream_id</span><span class="o">=</span><span class="n">stream_id</span>
+                <span class="p">)</span>
+            <span class="k">await</span> <span class="n">pipe</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">prefetch</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="o">**</span><span class="n">keys</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">redis</span><span class="o">.</span><span class="n">xreadgroup</span><span class="p">(</span>  <span class="c1"># yapf: disable</span>
+            <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
+            <span class="n">consumer_id</span><span class="o">=</span><span class="n">consumer</span><span class="p">,</span>
+            <span class="n">count</span><span class="o">=</span><span class="n">prefetch</span><span class="p">,</span>
+            <span class="n">block</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">keys</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">ack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">events</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">redis</span><span class="o">.</span><span class="n">xack</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">group</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">xid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="c1"># XACK supports multiple ids in one command, but only per</span>
+            <span class="c1"># key and consumer group, so we must preprocess the events.</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="n">keys</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">key</span><span class="p">]:</span>
+                    <span class="n">keys</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">group</span><span class="p">:</span> <span class="p">[]}</span>
+
+                <span class="n">keys</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">key</span><span class="p">][</span><span class="n">e</span><span class="o">.</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">xid</span><span class="p">)</span>
+
+            <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">redis</span><span class="o">.</span><span class="n">pipeline</span><span class="p">()</span> <span class="k">as</span> <span class="n">pipe</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">groups</span> <span class="ow">in</span> <span class="n">keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">xids</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="n">pipe</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="s2">&quot;XACK&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="o">*</span><span class="n">xids</span><span class="p">])</span>
+                <span class="k">await</span> <span class="n">pipe</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;acked&quot;</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_compute_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partition_by</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">partition_by</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partition_by</span><span class="p">,</span> <span class="n">Callable</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">partition_by</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">_primitive</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">compressor</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">compressor</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">_primitive</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">compressor</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">compressor</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="o">**</span><span class="n">value</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

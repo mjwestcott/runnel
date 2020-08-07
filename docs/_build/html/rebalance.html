@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Rebalance &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="reference.html" />
+    <link rel="prev" title="Architecture" href="architecture.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide.html"> Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html"> Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motivation.html"> Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html"> Architecture</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> Rebalance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#a-single-worker">A single worker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-new-worker-joins">A new worker joins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-worker-leaves">A worker leaves</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html"> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Rebalance</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/rebalance.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="rebalance">
+<h1>Rebalance<a class="headerlink" href="#rebalance" title="Permalink to this headline">¶</a></h1>
+<p>Runnel workers must coordinate ownership over a set of partitioned Redis stream keys.
+This is conducted via a dynamic ‘rebalance’ algorithm described below.</p>
+<div class="section" id="a-single-worker">
+<h2>A single worker<a class="headerlink" href="#a-single-worker" title="Permalink to this headline">¶</a></h2>
+<p>Let’s start with a simple case: a single worker joins an empty group to begin processing
+events. Let’s assume the stream has 8 partitions.</p>
+<img alt="_images/rebalance-1.png" src="_images/rebalance-1.png" />
+<ol class="arabic simple">
+<li><p>Worker 1 announces it has joined the group. It does this by editing the membership
+key in Redis (see <a class="reference internal" href="architecture.html#redis-keys"><span class="std std-ref">Redis Keys</span></a>). Since there are no other workers, it will
+assign itself every partition of the stream. It also adds a message to the control
+stream to notify any other workers that the assignments have changed and they must
+start a rebalance.</p></li>
+<li><p>The membership key is changed in Redis, and a control message is sent to all
+listening workers.</p></li>
+<li><p>Worker 1 receives a message on the control stream saying that it has joined, so it
+performs a rebalance. It attempts to acquire locks in Redis for every partition it
+has been assigned.</p></li>
+<li><p>The partition locks in Redis are now owned by Worker 1 and it can begin processing
+events.</p></li>
+</ol>
+</div>
+<div class="section" id="a-new-worker-joins">
+<h2>A new worker joins<a class="headerlink" href="#a-new-worker-joins" title="Permalink to this headline">¶</a></h2>
+<p>Next, another worker joins and must coordinate with the first to split up ownership over
+partitions.</p>
+<img alt="_images/rebalance-2.png" src="_images/rebalance-2.png" />
+<ol class="arabic simple" start="5">
+<li><p>Worker 2 announces it has joined the group. It does this by editing the membership
+key in Redis. Since there is already a worker, it will assign itself partitions 5-8,
+while 1-4 will remain with Worker 1. It also adds a message to the control stream to
+notify any other workers that the assignments have changed and they must start a
+rebalance.</p></li>
+<li><p>The membership key is changes in Redis, and a control message is sent to all
+listening workers.</p></li>
+<li><p>Both workers receive the message on the control stream saying that Worker 2 has
+joined, so they initiate a rebalance.</p></li>
+<li><p>Worker 1 realises that it is no longer assigned partitions 5-8, so it halts
+processing them and releases the corresponding locks in Redis.</p></li>
+<li><p>Partitions 5-8 are no longer owned by anyone. Worker 2 realises that it should
+acquire them.</p></li>
+<li><p>Partitions 5-8 are now owned by Worker 2 and it can begin processing them.</p></li>
+</ol>
+<p>Note that steps 8. and 9. could have happened in reverse. In that case, Worker 2
+would have been unable to acquire the locks since Worker 1 would not have released
+them yet. Worker 2 would have slept for a small duration before trying again.</p>
+<p>Also, note that partitions 1-4 were not affected by the rebalance and Worker 1 did not
+have to stop processing them. This greatly benefits processing throughput during
+rebalances.</p>
+</div>
+<div class="section" id="a-worker-leaves">
+<h2>A worker leaves<a class="headerlink" href="#a-worker-leaves" title="Permalink to this headline">¶</a></h2>
+<p>Finally, worker 1 leaves the group. Let’s say it has received a termination signal. The
+worker’s internal tasks will be cancelled, but its processors currently processing
+events will be given a short grace period to complete (e.g. to finish
+<a class="reference internal" href="guide.html#acknowledgement"><span class="std std-ref">Acknowledgement</span></a>).</p>
+<img alt="_images/rebalance-3.png" src="_images/rebalance-3.png" />
+<ol class="arabic simple" start="11">
+<li><p>Worker 1 announced it has left the group. It does this by editing the membership key
+in Redis. Since there is one remaining worker, it will assign Worker 2 every
+partition of the stream. It also adds a message to the control stream to notify any
+other workers that the assignments have changed and they must start a rebalance.
+Before exiting, Worker 1 releases its partition locks 1-4.</p></li>
+<li><p>Partitions 1-4 are no longer owned by anyone. The membership key is changes in
+Redis, and a control message is sent to all listening workers.</p></li>
+<li><p>Worker 2 receives the message on the control stream saying that Worker 1 has left, so
+it initiates a rebalance. It realises it must acquire partitions 1-4.</p></li>
+<li><p>Partitions 1-4 are now owned by Worker 2 and it can begin processing them.</p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="reference.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="architecture.html" class="btn btn-neutral float-left" title="Architecture" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

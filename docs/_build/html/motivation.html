@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Motivation &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Architecture" href="architecture.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide.html"> Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html"> Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> Motivation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ordered-event-processing">Ordered event processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#solutions">Solutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#redis-streams">Redis Streams</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html"> Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rebalance.html"> Rebalance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html"> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Motivation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/motivation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="motivation">
+<h1>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h1>
+<p>Whereas traditional job queues do not provide ordering guarantees, Runnel is designed to
+process partitions of your event stream strictly in the order events are created.</p>
+<div class="section" id="ordered-event-processing">
+<h2>Ordered event processing<a class="headerlink" href="#ordered-event-processing" title="Permalink to this headline">¶</a></h2>
+<p>Backend services often need to perform background processing. Typically, jobs are placed
+on a queue which is processed by multiple workers. The number of workers can be
+increased to scale out. In this use case, the architecture is relatively simple because
+we pay no attention to the order in which events are processed. Common uses include
+sending emails, producing image thumbnails, etc. In Python you might use <a class="reference external" href="https://github.com/celery/celery">Celery</a> or <a class="reference external" href="https://github.com/mjwestcott/fennel">Fennel</a>.</p>
+<p>Sometimes, however, you care about the order in which events occur. For example, if
+events represent rows to be indexed into a search database, it’s important that the last
+modification is the final one indexed, otherwise searches will return stale data
+indefinitely. Similarly, if events represent user actions, processing the second one
+(‘user upgraded account’) might rely on the first (‘user created account’).</p>
+</div>
+<div class="section" id="solutions">
+<h2>Solutions<a class="headerlink" href="#solutions" title="Permalink to this headline">¶</a></h2>
+<p>There are multiple solutions to the problem:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Use one queue for all events, and have one worker process them.</p></li>
+</ol>
+</div></blockquote>
+<p>This works, assuming the queue stores events in order, but obviously doesn’t scale
+because the entire pipeline is processed in serial.</p>
+<blockquote>
+<div><ol class="arabic simple" start="2">
+<li><p>Use one queue per entity, and have at most one worker per queue.</p></li>
+</ol>
+</div></blockquote>
+<p>The ordering requirement can usually be constrained to an entity. In the user actions
+example above, events for each user must be processed in-order, but the absolute
+ordering between all users wasn’t important. In that case, we can solve the scale
+problem by introducing parallelism at the queue level. If queues and workers are cheap
+to operate, or there are a small number of distinct entities, this would be feasible.</p>
+<blockquote>
+<div><p>3. Use a fixed number of queues, partition events by entity, and have at most one worker
+per queue.</p>
+</div></blockquote>
+<p>In practice, we may need to support a large number of entities (e.g. millions of users)
+and queues are not trivial to create, so this third option is sensible. Our degree of
+parallelism is controlled by the number of queues we choose to create. Events must have
+an entity id which is used to select the right queue to which it should be sent.</p>
+<p>We have essentially described the architecture of large-scale event processing pipelines
+popularised by <a class="reference external" href="https://kafka.apache.org/">Kafka</a> and its <a class="reference external" href="https://kafka.apache.org/documentation/streams/">ecosystem</a>. AWS SQS also supports <a class="reference external" href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues.html">partitioned,
+ordered queues</a>.
+So why do we need another solution? Unlike the alternatives, Redis is free, open-source,
+and, crucially, simple and easy to operate. The question is: does it support our use case?</p>
+</div>
+<div class="section" id="redis-streams">
+<h2>Redis Streams<a class="headerlink" href="#redis-streams" title="Permalink to this headline">¶</a></h2>
+<p>Starting in version 5.0, Redis offers a <a class="reference external" href="https://redis.io/topics/streams-intro">‘stream’</a>
+data structure. You might expect it to solve our use case directly, especially since it
+provides a ‘consumer group’ abstraction inspired by Kafka.</p>
+<p>However, the builtin streams commands were designed to support a slightly different
+scenario. The ‘consumer group’ abstraction allows multiple consumers to share
+responsibility for processing a single stream. This is akin to the traditional job queue
+described above: it loses the ordering guarantee that we care about.</p>
+<p>There is no builtin support for partitioning a stream or coordinating multiple workers
+across those partitions (e.g. a rebalance algorithm for assigning ownership of
+partitions to workers <a class="reference external" href="https://medium.com/streamthoughts/apache-kafka-rebalance-protocol-or-the-magic-behind-your-streams-applications-e94baf68e4f2">as found in Kafka</a>).</p>
+<p>So if we are going to use Redis as an ordered, partitioned, event processing backend, we
+need to build the necessary features in a client library on top. For a detailed
+breakdown of how Runnel solves these problems, see the <a class="reference internal" href="architecture.html#architecture"><span class="std std-ref">Architecture</span></a> section.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="architecture.html" class="btn btn-neutral float-right" title="Architecture" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

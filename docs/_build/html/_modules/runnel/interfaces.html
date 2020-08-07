@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>runnel.interfaces &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide.html"> Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html"> Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../motivation.html"> Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html"> Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rebalance.html"> Rebalance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html"> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>runnel.interfaces</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for runnel.interfaces</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">runnel.types</span> <span class="kn">import</span> <span class="n">Event</span>
+
+
+<div class="viewcode-block" id="Compressor"><a class="viewcode-back" href="../../reference.html#runnel.interfaces.Compressor">[docs]</a><span class="k">class</span> <span class="nc">Compressor</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implement this interface to customise event data compression.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import gzip</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; class Gzip(Compressor):</span>
+<span class="sd">    ...     def compress(self, value):</span>
+<span class="sd">    ...         return gzip.compress(value)</span>
+<span class="sd">    ...</span>
+<span class="sd">    ...     def decompress(self, value):</span>
+<span class="sd">    ...         return gzip.decompress(value)</span>
+
+<span class="sd">    Then configure your serializer to use it:</span>
+
+<span class="sd">    &gt;&gt;&gt; from runnel import App, Record, JSONSerializer</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; app = App(name=&quot;example&quot;)</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; class Order(Record):</span>
+<span class="sd">    ...     order_id: int</span>
+<span class="sd">    ...     amount: int</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; orders = app.stream(</span>
+<span class="sd">    ...     name=&quot;orders&quot;,</span>
+<span class="sd">    ...     record=Order,</span>
+<span class="sd">    ...     partition_by=&quot;order_id&quot;,</span>
+<span class="sd">    ...     serializer=JSONSerializer(compressor=Gzip()),</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Compressor.compress"><a class="viewcode-back" href="../../reference.html#runnel.interfaces.Compressor.compress">[docs]</a>    <span class="k">def</span> <span class="nf">compress</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return compressed bytes.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Compressor.decompress"><a class="viewcode-back" href="../../reference.html#runnel.interfaces.Compressor.decompress">[docs]</a>    <span class="k">def</span> <span class="nf">decompress</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return decompressed bytes.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="Serializer"><a class="viewcode-back" href="../../reference.html#runnel.interfaces.Serializer">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Serializer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implement this interface to customise event data serialization.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import orjson  # A fast JSON library written in Rust.</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; @dataclass(frozen=True)</span>
+<span class="sd">    &gt;&gt;&gt; class FastJSONSerializer(Serializer):</span>
+<span class="sd">    &gt;&gt;&gt;     compressor = None</span>
+<span class="sd">    ...</span>
+<span class="sd">    ...     def dumps(self, value):</span>
+<span class="sd">    ...         return orjson.dumps(value)</span>
+<span class="sd">    ...</span>
+<span class="sd">    ...     def loads(self, value):</span>
+<span class="sd">    ...         return orjson.loads(value)</span>
+
+<span class="sd">    Then pass it to your stream:</span>
+
+<span class="sd">    &gt;&gt;&gt; from runnel import App, Record</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; app = App(name=&quot;example&quot;)</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; class Order(Record):</span>
+<span class="sd">    ...     order_id: int</span>
+<span class="sd">    ...     amount: int</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; orders = app.stream(</span>
+<span class="sd">    ...     name=&quot;orders&quot;,</span>
+<span class="sd">    ...     record=Order,</span>
+<span class="sd">    ...     partition_by=&quot;order_id&quot;,</span>
+<span class="sd">    ...     serializer=FastJSONSerializer(),</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">compressor</span><span class="p">:</span> <span class="n">Compressor</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Serializer.dumps"><a class="viewcode-back" href="../../reference.html#runnel.interfaces.Serializer.dumps">[docs]</a>    <span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return serialized bytes.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Serializer.loads"><a class="viewcode-back" href="../../reference.html#runnel.interfaces.Serializer.loads">[docs]</a>    <span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return deserialized Python object.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="Middleware"><a class="viewcode-back" href="../../reference.html#runnel.interfaces.Middleware">[docs]</a><span class="k">class</span> <span class="nc">Middleware</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Middleware are objects with a `handler` method (decribed below). Processors accept</span>
+<span class="sd">    a list of user-provided middleware.</span>
+
+<span class="sd">    The handler methods form a processing pipeline which runs over events before they</span>
+<span class="sd">    are yielded to the final processor function. Each handler is passed the previous</span>
+<span class="sd">    handler in the pipeline (called &#39;parent&#39;).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from runnel.interfaces import Middleware</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; class Printer(Middleware):</span>
+<span class="sd">    ...     async def handler(self, parent, **kwargs):</span>
+<span class="sd">    ...         async for x in parent:</span>
+<span class="sd">    ...             print(x)</span>
+<span class="sd">    ...             yield x</span>
+
+<span class="sd">    It can then be passed to the processor.</span>
+
+<span class="sd">    &gt;&gt;&gt; @app.processor(mystream, middleware=[Printer()])</span>
+<span class="sd">    ... async def proc(events):</span>
+<span class="sd">    ...     async for record in events.records():</span>
+<span class="sd">    ...         pass</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Some of Runnel&#39;s internal functionality is implemented using middleware. They can be</span>
+<span class="sd">    found `here &lt;https://github.com/mjwestcott/runnel/tree/master/runnel/middleware&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Middleware.handler"><a class="viewcode-back" href="../../reference.html#runnel.interfaces.Middleware.handler">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Event&quot;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Event&quot;</span><span class="p">]]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A middleware handler is an async generator. Given a parent generator that yields</span>
+<span class="sd">        Events or batches of Events, it must yield the same.</span>
+
+<span class="sd">        For example:</span>
+
+<span class="sd">        &gt;&gt;&gt; async for x in parent:</span>
+<span class="sd">        ...     assert isinstance(x, (Event, list))</span>
+<span class="sd">        ...     yield x</span>
+
+<span class="sd">        Post-processing logic can be added below, in a finally clause. This allows you</span>
+<span class="sd">        to respond to errors further up the chain (e.g. in the final processor code):</span>
+
+<span class="sd">        &gt;&gt;&gt; async for x in parent:</span>
+<span class="sd">        ...     try:</span>
+<span class="sd">        ...         yield x</span>
+<span class="sd">        ...     finally:</span>
+<span class="sd">        ...         await logic()</span>
+
+<span class="sd">        This is needed because a GeneratorExit exception will be thrown into the yield</span>
+<span class="sd">        point if an exception is raised in the calling code. (Also note that async</span>
+<span class="sd">        generator finalization is scheduled by the Python runtime asynchronously, but</span>
+<span class="sd">        the Runnel framework ensures it has finished before restarting a processor</span>
+<span class="sd">        function.)</span>
+
+<span class="sd">        If you only want to know if an exception was raised further up the chain, you</span>
+<span class="sd">        can use the following:</span>
+
+<span class="sd">        &gt;&gt;&gt; async for x in parent:</span>
+<span class="sd">        ...     try:</span>
+<span class="sd">        ...         yield x</span>
+<span class="sd">        ...     except GeneratorExit:</span>
+<span class="sd">        ...         await cleanup()</span>
+<span class="sd">        ...         raise</span>
+
+<span class="sd">        (Note: Python requires that GeneratorExit it not ignored, so it must be reraised</span>
+<span class="sd">        here to avoid a RuntimeError)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

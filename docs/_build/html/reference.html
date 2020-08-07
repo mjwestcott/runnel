@@ -1,0 +1,921 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API Reference &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CLI" href="cli.html" />
+    <link rel="prev" title="Rebalance" href="rebalance.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide.html"> Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html"> Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motivation.html"> Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html"> Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rebalance.html"> Rebalance</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#runnel">runnel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#runnel-settings">runnel.settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#runnel-interfaces">runnel.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#runnel-constants">runnel.constants</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>API Reference</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/reference.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="runnel">
+<h2>runnel<a class="headerlink" href="#runnel" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="runnel.App">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.</code><code class="sig-name descname">App</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/app.html#App"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.App" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main abstraction provided by Runnel. Use the <a class="reference internal" href="#runnel.App.stream" title="runnel.App.stream"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stream()</span></code></a> and
+<a class="reference internal" href="#runnel.App.processor" title="runnel.App.processor"><code class="xref py py-meth docutils literal notranslate"><span class="pre">processor()</span></code></a> methods to define partitioned event streams and processors
+respectively. Apps will be run by workers via the CLI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – An app identifier. Will be used as a component of the Redis keys for the
+under-the-hood data structures.</p></li>
+<li><p><strong>kwargs</strong> (<em>Dict</em>) – Any of the settings found in <code class="xref py py-mod docutils literal notranslate"><span class="pre">runnel.settings</span></code> to override any options
+provided by environment variables.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Record</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;example&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;info&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">redis_url</span><span class="o">=</span><span class="s2">&quot;127.0.0.1:6379&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Specify your event types using the Record class:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span>
+<span class="gp">... </span>    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>    <span class="n">item_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Streams are configured to be partitioned by a chosen key.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">orders</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="s2">&quot;orders&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">Order</span><span class="p">,</span> <span class="n">partition_by</span><span class="o">=</span><span class="s2">&quot;order_id&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Processor functions iterate over the event stream and can rely on receiving events
+in the order they were created per key.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Under the hood, Runnel will take care of partitioning the stream to enable scalable
+distributed processing. We also take care of concurrently running the async processor
+functions – one for every partition in your stream. This processing may be
+distributed across many workers on different machines and Runnel will coordinate
+ownership of partitions dynamically as workers join or leave.</p>
+<dl class="py method">
+<dt id="runnel.App.stream">
+<code class="sig-name descname">stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">record</span></em>, <em class="sig-param"><span class="n">partition_by</span></em>, <em class="sig-param"><span class="n">serializer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">partition_count</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">partition_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hasher</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/app.html#App.stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.App.stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>A set of partitioned Redis streams, containing events as structured Record types.</p>
+<p>Kwargs, if provided, will override the default settings configured on the App
+instance or via environment variables (see <code class="xref py py-mod docutils literal notranslate"><span class="pre">runnel.settings</span></code>) for this
+stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – An stream identifier. Will be used as a component of the Redis keys for the
+under-the-hood data structures.</p></li>
+<li><p><strong>record</strong> (<em>Type</em><em>[</em><a class="reference internal" href="#runnel.Record" title="runnel.Record"><em>Record</em></a><em>]</em>) – A class that inherits from Record, which specifies the structure of the event
+data this stream expects. See <a class="reference internal" href="#runnel.Record" title="runnel.Record"><code class="xref py py-class docutils literal notranslate"><span class="pre">runnel.Record</span></code></a>.</p></li>
+<li><p><strong>partition_by</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Callable</em><em>[</em><a class="reference internal" href="#runnel.Record" title="runnel.Record"><em>Record</em></a><em>, </em><em>Any</em><em>]</em><em>]</em>) – A str representing an attribute of the Record type (or a callable to compute
+a value) which should be used to partition events. For example, if your events
+concern user activity and you want to process events in-order per user, you
+might choose the “user_id” attribute to partition by.</p></li>
+<li><p><strong>serializer</strong> (<a class="reference internal" href="#runnel.interfaces.Serializer" title="runnel.interfaces.Serializer"><em>Serializer</em></a>) – An object implementing the <a class="reference internal" href="#runnel.interfaces.Serializer" title="runnel.interfaces.Serializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">runnel.interfaces.Serializer</span></code></a> interface
+which controls how records are stored in the Redis streams.</p></li>
+<li><p><strong>partition_count</strong> (<em>int</em>) – How many partitions to create.</p></li>
+<li><p><strong>partition_size</strong> (<em>int</em>) – The max length of each partition. (Implemented approximately via Redis’ MAXLEN
+option to XACK.) Represents the size of the buffer in case processors are
+offline or cannot keep up with the event rate.</p></li>
+<li><p><strong>hasher</strong> (<em>Callable</em><em>[</em><em>Any</em><em>, </em><em>int</em><em>]</em>) – A function used to hash the partition key to decide to which partition to
+send a record.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Record</span><span class="p">,</span> <span class="n">JSONSerializer</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span>
+</pre></div>
+</div>
+<p>Streams are configured to be partitioned by a chosen key.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">orders</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;orders&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">record</span><span class="o">=</span><span class="n">Order</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">partition_by</span><span class="o">=</span><span class="s2">&quot;order_id&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">partition_count</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">serializer</span><span class="o">=</span><span class="n">JSONSerializer</span><span class="p">(),</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="runnel.App.processor">
+<code class="sig-name descname">processor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stream</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exception_policy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">middleware</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lock_expiry</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">read_timeout</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefetch_count</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">assignment_attempts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">assignment_sleep</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">grace_period</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pool_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">join_delay</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/app.html#App.processor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.App.processor" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper around an async Python function which iterates over a continuous event
+stream.</p>
+<p>Kwargs, if provided, will override the default settings configured on the App
+instance or via environment variables (see <code class="xref py py-mod docutils literal notranslate"><span class="pre">runnel.settings</span></code>) for this
+processor.</p>
+<p class="rubric">Notes</p>
+<p>Events are acknowledged at the end of every processing loop. This means that if
+your processor crashed before completion, that section of work will be repeated
+when the processor is restarted. Therefore Runnel provides ‘at least once’
+semantics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exception_policy</strong> (<a class="reference internal" href="#runnel.constants.ExceptionPolicy" title="runnel.constants.ExceptionPolicy"><em>ExceptionPolicy</em></a>) – <p>How to handle exceptions raised in the user-provided processor coroutine.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">HALT</span></code>: Raise the exception, halting execution of the affected partition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QUARANTINE</span></code>: Mark the affected partition as poisoned, and continue with others.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IGNORE</span></code>: Suppress the exception and continue processing regardless.</p></li>
+</ul>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">HALT</span></code>.</p>
+</p></li>
+<li><p><strong>middleware</strong> (<em>List</em><em>[</em><a class="reference internal" href="#runnel.interfaces.Middleware" title="runnel.interfaces.Middleware"><em>Middleware</em></a><em>]</em>) – A list of Middleware objects for managaing the data pipeline. Can be used to
+implement custom exception handling (e.g. dead letter queues).</p></li>
+<li><p><strong>lock_expiry</strong> (<em>int</em><em> (</em><em>seconds</em><em>)</em>) – The duration of the lock on stream partitions owned by executors of this
+processor. This controls the worst case lag a partition’s events may
+experience since other executors will have to wait acquire the lock in case
+the owner has died.</p></li>
+<li><p><strong>read_timeout</strong> (<em>int</em><em> (</em><em>milliseconds</em><em>)</em>) – How long to stay blocked reading from Redis via XREADGROUP. Nothing depends
+on this.</p></li>
+<li><p><strong>prefetch_count</strong> (<em>int</em>) – The maximum number of events to read from Redis per partition owned by an
+executor. (If a single executor owns all 16 partitions in a stream and
+prefetch_count is 10, then 160 events may be read at once.) Purely an
+optimisation.</p></li>
+<li><p><strong>assignment_attempts</strong> (<em>int</em>) – How many times to try to complete a rebalance operation (i.e. acquire our
+declared partitions) before giving up.</p></li>
+<li><p><strong>assignment_sleep</strong> (<em>float</em><em> (</em><em>seconds</em><em>)</em>) – How long to wait between attempts to complete a rebalance operation.</p></li>
+<li><p><strong>grace_period</strong> (<em>float</em><em> (</em><em>seconds</em><em>)</em>) – How long to wait for execution to complete gracefully before cancelling it.</p></li>
+<li><p><strong>pool_size</strong> (<em>int</em>) – How many concurrent connections to make to Redis to read events.</p></li>
+<li><p><strong>join_delay</strong> (<em>int</em><em> (</em><em>seconds</em><em>)</em>) – How long to wait after joining before attempting to acquire partitions.
+Intended to mitigate a thundering herd problem of multiple workers joining
+simultaneously and needing to rebalance multiple times.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Record</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">orders</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;orders&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">Order</span><span class="p">,</span> <span class="n">partition_by</span><span class="o">=</span><span class="s2">&quot;order_id&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="runnel.App.task">
+<code class="sig-name descname">task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">on_leader</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/app.html#App.task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.App.task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define an async function to run at worker startup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>on_leader</strong> (<em>bool</em>) – Whether to run the function only on one worker: the elected leader.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">task</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;starting&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want the task to run on only one worker:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">on_leader</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;running once&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="runnel.App.timer">
+<code class="sig-name descname">timer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">interval</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">on_leader</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/app.html#App.timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.App.timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define an async function to be run at periodic intervals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>interval</strong> (<em>float</em><em> (</em><em>seconds</em><em>)</em>) – How often the function executes in seconds.</p></li>
+<li><p><strong>on_leader</strong> (<em>bool</em>) – Whether to run the function only on one worker: the elected leader.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">timer</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">def</span> <span class="nf">every_10_seconds</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;10 seconds passed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want the task to run on only one worker:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">app</span><span class="o">.</span><span class="n">timer</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">on_leader</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">def</span> <span class="nf">every_5_seconds</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5 seconds passed on the leader&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="runnel.App.crontab">
+<code class="sig-name descname">crontab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spec</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">timezone</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_leader</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/app.html#App.crontab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.App.crontab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define an async function to be run at the fixed times, defined by the Cron
+format (see <a class="reference external" href="https://crontab.guru/">https://crontab.guru/</a> for examples).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spec</strong> (<em>str</em>) – The Cron spec defining fixed times to run the decorated function.</p></li>
+<li><p><strong>timezone</strong> (<em>tzinfo</em>) – The timezone to be taken into account for the Cron jobs. If not set value
+from <code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.settings.Settings.timezone</span></code> will be taken.</p></li>
+<li><p><strong>on_leader</strong> (<em>bool</em>) – Whether to run the function only on one worker: the elected leader.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">app</span><span class="o">.</span><span class="n">crontab</span><span class="p">(</span><span class="s2">&quot;45 17 * * *&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">def</span> <span class="nf">every_5_45_pm</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;It is 5:45pm UTC&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want the task to run on only one worker:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">app</span><span class="o">.</span><span class="n">crontab</span><span class="p">(</span><span class="s2">&quot;45 17 * * *&quot;</span><span class="p">,</span> <span class="n">on_leader</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">def</span> <span class="nf">every_5_45_pm</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;It is 5:45pm UTC on the leader&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With a timezone specification:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">crontab</span><span class="p">(</span><span class="s2">&quot;45 17 * * *&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s1">&#39;GMT&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">def</span> <span class="nf">every_5_45_pm</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;It is 5:45pm in London&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="runnel.Record">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.</code><code class="sig-name descname">Record</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/record.html#Record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Record" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is used to specify structured data types to store in streams.</p>
+<p>It is a specialized version of pydantic.BaseModel, see
+<a class="reference external" href="https://pydantic-docs.helpmanual.io/">https://pydantic-docs.helpmanual.io/</a> for more information.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span>
+<span class="gp">... </span>    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>    <span class="n">item_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Records can be nested arbitrarily, e.g. <cite>items: List[Item]</cite> where <cite>Item</cite> is
+another record. They will be serialized (according to the serializer/compressor
+settings) and stored as arbitrary bytes as a single value in a Redis stream
+entry.</p>
+<p>Alternatively, you can use the native Redis stream key/value pairs by setting
+primitive=True, e.g.:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">UserAction</span><span class="p">(</span><span class="n">Record</span><span class="p">,</span> <span class="n">primitive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
+<p>This allows you to benefit from optimisations such as delta compression (see
+<a class="reference external" href="http://antirez.com/news/128">http://antirez.com/news/128</a>), at the cost of not supporting nested values. Only
+int, float, bool, str, and bytes are allowed.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="runnel.Events">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.</code><code class="sig-name descname">Events</code><span class="sig-paren">(</span><em class="sig-param">runner: Runner</em>, <em class="sig-param">partition: Partition</em>, <em class="sig-param">want: str = 'events'</em>, <em class="sig-param">batch_args: Optional[Tuple] = None</em>, <em class="sig-param">failed: Set[Event] = &lt;factory&gt;</em>, <em class="sig-param">finalized: anyio.abc.synchronization.Event = &lt;factory&gt;</em>, <em class="sig-param">agen: AsyncIterator[Union[Event</em>, <em class="sig-param">List[Event]]] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/events.html#Events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Events" title="Permalink to this definition">¶</a></dt>
+<dd><p>An async generator which yields Events (or batches of them). This is the object
+passed to user-defined processor functions.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Record</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">orders</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;orders&quot;</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">Order</span><span class="p">,</span> <span class="n">partition_by</span><span class="o">=</span><span class="s2">&quot;order_id&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="runnel.Events.take">
+<code class="sig-name descname">take</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">within</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/events.html#Events.take"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Events.take" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the events generator to yield batches of <cite>n</cite> events (unless <cite>within</cite>
+seconds pass before <cite>n</cite> are ready, in which case yield all pending events).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – The desired batch size.</p></li>
+<li><p><strong>within</strong> (<em>int</em><em> (</em><em>seconds</em><em>)</em>) – The duration to wait for the batch size to be reached before yielding.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">for</span> <span class="n">orders</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">within</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="c1"># Handle orders as an atomic batch!</span>
+<span class="gp">... </span>        <span class="k">assert</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>This method is provided for efficiency. It is intended to be used where batch
+processing of events greatly increases your processing speed. For example, if
+you are loading records into a database, you may want to use its bulk import API
+to ingest a batch of records at a time.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Runnel acks events after every iteration through the event generator loop. When
+using <cite>take</cite>, this means the entire batch will be acked at once. As a result,
+you must process the batch as a single unit atomically. If you iterate over the
+events in a batch one-at-a-time and you fail half-way through, then the entire
+batch will be considered failed (and handled according to your
+<a class="reference internal" href="#runnel.constants.ExceptionPolicy" title="runnel.constants.ExceptionPolicy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.constants.ExceptionPolicy</span></code></a>). This will lead to duplicate
+processing if the batch is retried, or dropped events if the batch is ignored.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="runnel.Events.records">
+<code class="sig-name descname">records</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/events.html#Events.records"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Events.records" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the events generator to deserialize events into Record objects.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">Record</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">Record</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If this method is omitted, you will iterate over the low-level <a class="reference internal" href="#runnel.Event" title="runnel.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">runnel.Event</span></code></a>
+objects, which gives you access to the raw data as <code class="docutils literal notranslate"><span class="pre">Dict[bytes,</span> <span class="pre">bytes]</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">Event</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">Event</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="runnel.Event">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.</code><code class="sig-name descname">Event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">runner</span><span class="p">:</span> <span class="n">Runner</span></em>, <em class="sig-param"><span class="n">partition</span><span class="p">:</span> <span class="n">Partition</span></em>, <em class="sig-param"><span class="n">group</span><span class="p">:</span> <span class="n">bytes</span></em>, <em class="sig-param"><span class="n">xid</span><span class="p">:</span> <span class="n">bytes</span></em>, <em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>bytes<span class="p">, </span>bytes<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">recovering</span><span class="p">:</span> <span class="n">bool</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/types.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Event" title="Permalink to this definition">¶</a></dt>
+<dd><p>The internal representation of an event in a stream. Will ordinarily by deserialized
+into a Record type before it is acted upon: e.g. via <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span> <span class="pre">record</span> <span class="pre">in</span>
+<span class="pre">events.records():</span></code>. This low-level representation is also available if necessary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>partition</strong> (<a class="reference internal" href="#runnel.Partition" title="runnel.Partition"><em>Partition</em></a>) – The partition this event came from.</p></li>
+<li><p><strong>xid</strong> (<em>bytes</em>) – The Redis stream ID.</p></li>
+<li><p><strong>data</strong> (<em>Dict</em><em>[</em><em>bytes</em><em>, </em><em>bytes</em><em>]</em>) – The keys and values retrieved from the Redis stream.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">async</span> <span class="k">def</span> <span class="nf">myproc</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">xid</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt id="runnel.Partition">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.</code><code class="sig-name descname">Partition</code><span class="sig-paren">(</span><em class="sig-param">stream: Stream</em>, <em class="sig-param">number: int</em>, <em class="sig-param">pointer: bytes = b'0-0'</em>, <em class="sig-param">lock: anyio.abc.synchronization.Lock = &lt;factory&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/types.html#Partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>The internal representation of a partition of the stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number</strong> (<em>int</em>) – Which numerical partition this is.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – The Redis key under which the stream data structure is stored.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="runnel.Stream">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.</code><code class="sig-name descname">Stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app</span><span class="p">:</span> <span class="n">App</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">record</span><span class="p">:</span> <span class="n">Type<span class="p">[</span>runnel.record.Record<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">partition_by</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>Callable<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">serializer</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#runnel.interfaces.Serializer" title="runnel.interfaces.Serializer">runnel.interfaces.Serializer</a></span></em>, <em class="sig-param"><span class="n">hasher</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>Any<span class="p">]</span><span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">partition_count</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">partition_size</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/stream.html#Stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>A set of partitioned Redis streams, together representing a single logical event
+stream.</p>
+<p>Not intended to be used directly. Use <a class="reference internal" href="#runnel.App.stream" title="runnel.App.stream"><code class="xref py py-attr docutils literal notranslate"><span class="pre">runnel.App.stream</span></code></a> instead.</p>
+<dl class="py method">
+<dt id="runnel.Stream.send">
+<em class="property">async </em><code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">records</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span>runnel.record.Record<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">stream_ids</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/stream.html#Stream.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Stream.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send records to partitions of the stream, according to their partition keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>records</strong> (<em>Iterable</em><em>[</em><a class="reference internal" href="#runnel.Record" title="runnel.Record"><em>Record</em></a><em>]</em>) – The records to send.</p></li>
+<li><p><strong>stream_ids</strong> (<em>Optional</em><em>[</em><em>Iterable</em><em>[</em><em>str</em><em>]</em><em>]</em>) – A list of stream_ids corresponding to the records. Must be the same length
+as records. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then <code class="docutils literal notranslate"><span class="pre">&quot;*&quot;</span></code> will be used for all records. See
+<a class="reference external" href="https://redis.io/commands/xadd">https://redis.io/commands/xadd</a> for more details.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="runnel-settings">
+<h2>runnel.settings<a class="headerlink" href="#runnel-settings" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="runnel.settings.Settings">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.settings.</code><code class="sig-name descname">Settings</code><span class="sig-paren">(</span><em class="sig-param">_env_file: Optional[Union[pathlib.Path</em>, <em class="sig-param">str]] = '&lt;object object&gt;'</em>, <em class="sig-param">_env_file_encoding: Optional[str] = None</em>, <em class="sig-param">*</em>, <em class="sig-param">redis_url: str = 'redis://127.0.0.1:6379'</em>, <em class="sig-param">log_format: str = 'console'</em>, <em class="sig-param">log_level: str = 'info'</em>, <em class="sig-param">autodiscover: str = '**/streams.py'</em>, <em class="sig-param">timezone: datetime.tzinfo = &lt;UTC&gt;</em>, <em class="sig-param">leadership_poll_interval: int = 4000</em>, <em class="sig-param">testing: bool = False</em>, <em class="sig-param">default_partition_count: int = 16</em>, <em class="sig-param">default_serializer: pydantic.types.PyObject = 'runnel.serialization.default'</em>, <em class="sig-param">default_hasher: pydantic.types.PyObject = 'runnel.hashing.default'</em>, <em class="sig-param">default_exception_policy: runnel.constants.ExceptionPolicy = &lt;ExceptionPolicy.HALT: 'halt'&gt;</em>, <em class="sig-param">default_lock_expiry: int = 120</em>, <em class="sig-param">default_read_timeout: int = 4000</em>, <em class="sig-param">default_prefetch_count: int = 8</em>, <em class="sig-param">default_assignment_attempts: int = 32</em>, <em class="sig-param">default_assignment_sleep: float = 2</em>, <em class="sig-param">default_grace_period: float = 8</em>, <em class="sig-param">default_pool_size: int = 16</em>, <em class="sig-param">default_join_delay: int = 2</em>, <em class="sig-param">default_partition_size: int = 50000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/settings.html#Settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.settings.Settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class should not be used directly, but acts as a container for application
+settings, configured via environment variables (e.g. <cite>RUNNEL_LOG_LEVEL=debug</cite>) or as
+kwargs to the App object.</p>
+<p>Many of the settings represent defaults for processors or streams and can be
+overridden at object initialisation time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>redis_url</strong> (<em>str</em>) – The URL to pass to aredis.StrictRedis.from_url. Default: <code class="docutils literal notranslate"><span class="pre">&quot;127.0.0.1:6379&quot;</span></code>.</p></li>
+<li><p><strong>log_format</strong> (<em>str</em>) – Either <code class="docutils literal notranslate"><span class="pre">&quot;json&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;console&quot;</span></code> to specify the log output format.</p></li>
+<li><p><strong>log_level</strong> (<em>str</em>) – The minimum log level to display: one of <code class="docutils literal notranslate"><span class="pre">&quot;debug&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;info&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;warning&quot;</span></code>
+is recommended.</p></li>
+<li><p><strong>autodiscover</strong> (<em>str</em>) – The pattern for <code class="xref py py-func docutils literal notranslate"><span class="pre">pathlib.Path.glob()</span></code> to find modules containing
+Runnel app-decorated functions (e.g. processors, tasks), which the worker must
+import on startup. Will be called relative to current working directory. Can be
+set to the empty string to disable. Default <code class="docutils literal notranslate"><span class="pre">'**/streams.py'</span></code>.</p></li>
+<li><p><strong>timezone</strong> (<em>tzinfo</em>) – The timezone to use by default for <code class="docutils literal notranslate"><span class="pre">app.crontab</span></code> schedules. Default: <code class="docutils literal notranslate"><span class="pre">pytz.UTC</span></code>.</p></li>
+<li><p><strong>leadership_poll_interval</strong> (<em>int</em><em> (</em><em>milliseconds</em><em>)</em>) – How long to sleep between worker leadership election attempts. Default: <code class="docutils literal notranslate"><span class="pre">4000</span></code></p></li>
+<li><p><strong>testing</strong> (<em>bool</em>) – Whether we are currently running the test suite.</p></li>
+<li><p><strong>default_serializer</strong> (<a class="reference internal" href="#runnel.interfaces.Serializer" title="runnel.interfaces.Serializer"><em>Serializer</em></a>) – An object implementing the Serialzer interface which controls how records
+are stored in the Redis streams. Default: <code class="docutils literal notranslate"><span class="pre">JSONSerialzer</span></code> unless <code class="docutils literal notranslate"><span class="pre">orjson</span></code> is
+installed (use the <code class="docutils literal notranslate"><span class="pre">runnel[fast]</span></code> bundle to install automatically), in which
+case <code class="docutils literal notranslate"><span class="pre">FastJSONSerializer</span></code>.</p></li>
+<li><p><strong>default_partition_count</strong> (<em>int</em>) – How many partitions to create. Default: <code class="docutils literal notranslate"><span class="pre">16</span></code>.</p></li>
+<li><p><strong>default_partition_size</strong> (<em>int</em>) – The max length of each partition. (Implemented approximately via Redis’ MAXLEN
+option to XACK.) Represents the size of the buffer in case processors are
+offline or cannot keep up with the event rate. Default: <code class="docutils literal notranslate"><span class="pre">50_000</span></code>.</p></li>
+<li><p><strong>default_hasher</strong> (<em>Callable</em><em>[</em><em>Any</em><em>, </em><em>int</em><em>]</em>) – A function used to hash a record’s partition key to decide which partition to
+send it to. Defaults to md5 unless <cite>xxhash</cite> is installed (use the <cite>runnel[fast]</cite>
+bundle to install automataically)</p></li>
+<li><p><strong>default_exception_policy</strong> (<a class="reference internal" href="#runnel.constants.ExceptionPolicy" title="runnel.constants.ExceptionPolicy"><em>ExceptionPolicy</em></a>) – <p>How to handle exceptions raised in the user-provided processor coroutine.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">HALT</span></code>: Raise the exception, halting execution of the affected partition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QUARANTINE</span></code>: Mark the affected partition as poisoned, and continue with others.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IGNORE</span></code>: Suppress the exception and continue processing regardless.</p></li>
+</ul>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">HALT</span></code>.</p>
+</p></li>
+<li><p><strong>default_lock_expiry</strong> (<em>int</em><em> (</em><em>seconds</em><em>)</em>) – The duration of the lock on stream partitions owned by executors of this
+processor. This controls the worst case lag a partition’s events may
+experience since other executors will have to wait acquire the lock in case
+the owner has died. Default: <code class="docutils literal notranslate"><span class="pre">120</span></code>.</p></li>
+<li><p><strong>default_read_timeout</strong> (<em>int</em><em> (</em><em>milliseconds</em><em>)</em>) – How long to stay blocked reading from Redis via XREADGROUP. Nothing depends
+on this. Default: <code class="docutils literal notranslate"><span class="pre">4000</span></code>.</p></li>
+<li><p><strong>default_prefetch_count</strong> (<em>int</em>) – The maximum number of events to read from Redis per partition owned by an
+executor. (If a single executor owns all 16 partitions in a stream and
+prefetch_count is 10, then 160 events may be read at once.) Purely an
+optimisation. Default: <code class="docutils literal notranslate"><span class="pre">8</span></code>.</p></li>
+<li><p><strong>default_assignment_attempts</strong> (<em>int</em>) – How many times to try to complete a rebalance operation (i.e. acquire our
+declared partitions) before giving up. Default: <code class="docutils literal notranslate"><span class="pre">32</span></code>.</p></li>
+<li><p><strong>default_assignment_sleep</strong> (<em>float</em><em> (</em><em>seconds</em><em>)</em>) – How long to wait between attempts to complete a rebalance operation.
+Default: <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
+<li><p><strong>default_grace_period</strong> (<em>float</em><em> (</em><em>seconds</em><em>)</em>) – How long to wait for execution to complete gracefully before cancelling it.
+Default: <code class="docutils literal notranslate"><span class="pre">8</span></code>.</p></li>
+<li><p><strong>default_pool_size</strong> (<em>int</em>) – How many concurrent connections to make to Redis to read events. Default: <code class="docutils literal notranslate"><span class="pre">16</span></code>.</p></li>
+<li><p><strong>default_join_delay</strong> (<em>int</em><em> (</em><em>seconds</em><em>)</em>) – How long to wait after joining before attempting to acquire partitions.
+Intended to mitigate a thundering herd problem of multiple workers joining
+simultaneously and needing to rebalance multiple times. Default: <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="runnel-interfaces">
+<h2>runnel.interfaces<a class="headerlink" href="#runnel-interfaces" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="runnel.interfaces.Compressor">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.interfaces.</code><code class="sig-name descname">Compressor</code><a class="reference internal" href="_modules/runnel/interfaces.html#Compressor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.interfaces.Compressor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement this interface to customise event data compression.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gzip</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Gzip</span><span class="p">(</span><span class="n">Compressor</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">compress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">gzip</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">decompress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">gzip</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then configure your serializer to use it:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Record</span><span class="p">,</span> <span class="n">JSONSerializer</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">orders</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;orders&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">record</span><span class="o">=</span><span class="n">Order</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">partition_by</span><span class="o">=</span><span class="s2">&quot;order_id&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">serializer</span><span class="o">=</span><span class="n">JSONSerializer</span><span class="p">(</span><span class="n">compressor</span><span class="o">=</span><span class="n">Gzip</span><span class="p">()),</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="runnel.interfaces.Compressor.compress">
+<code class="sig-name descname">compress</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bytes<a class="reference internal" href="_modules/runnel/interfaces.html#Compressor.compress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.interfaces.Compressor.compress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return compressed bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="runnel.interfaces.Compressor.decompress">
+<code class="sig-name descname">decompress</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bytes<a class="reference internal" href="_modules/runnel/interfaces.html#Compressor.decompress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.interfaces.Compressor.decompress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return decompressed bytes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="runnel.interfaces.Serializer">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.interfaces.</code><code class="sig-name descname">Serializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">compressor</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#runnel.interfaces.Compressor" title="runnel.interfaces.Compressor">runnel.interfaces.Compressor</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/interfaces.html#Serializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.interfaces.Serializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement this interface to customise event data serialization.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">orjson</span>  <span class="c1"># A fast JSON library written in Rust.</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">FastJSONSerializer</span><span class="p">(</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">compressor</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">orjson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">orjson</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then pass it to your stream:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Record</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Order</span><span class="p">(</span><span class="n">Record</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">orders</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;orders&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">record</span><span class="o">=</span><span class="n">Order</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">partition_by</span><span class="o">=</span><span class="s2">&quot;order_id&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">serializer</span><span class="o">=</span><span class="n">FastJSONSerializer</span><span class="p">(),</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="runnel.interfaces.Serializer.dumps">
+<code class="sig-name descname">dumps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span> &#x2192; bytes<a class="reference internal" href="_modules/runnel/interfaces.html#Serializer.dumps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.interfaces.Serializer.dumps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return serialized bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="runnel.interfaces.Serializer.loads">
+<code class="sig-name descname">loads</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">bytes</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="_modules/runnel/interfaces.html#Serializer.loads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.interfaces.Serializer.loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return deserialized Python object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="runnel.interfaces.Middleware">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.interfaces.</code><code class="sig-name descname">Middleware</code><a class="reference internal" href="_modules/runnel/interfaces.html#Middleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.interfaces.Middleware" title="Permalink to this definition">¶</a></dt>
+<dd><p>Middleware are objects with a <cite>handler</cite> method (decribed below). Processors accept
+a list of user-provided middleware.</p>
+<p>The handler methods form a processing pipeline which runs over events before they
+are yielded to the final processor function. Each handler is passed the previous
+handler in the pipeline (called ‘parent’).</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">runnel.interfaces</span> <span class="kn">import</span> <span class="n">Middleware</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Printer</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">async</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="k">yield</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>It can then be passed to the processor.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">mystream</span><span class="p">,</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">Printer</span><span class="p">()])</span>
+<span class="gp">... </span><span class="k">async</span> <span class="k">def</span> <span class="nf">proc</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="k">pass</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Some of Runnel’s internal functionality is implemented using middleware. They can be
+found <a class="reference external" href="https://github.com/mjwestcott/runnel/tree/master/runnel/middleware">here</a>.</p>
+<dl class="py method">
+<dt id="runnel.interfaces.Middleware.handler">
+<em class="property">async </em><code class="sig-name descname">handler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; AsyncIterator<span class="p">[</span>Union<span class="p">[</span>Event<span class="p">, </span>List<span class="p">[</span>Event<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="reference internal" href="_modules/runnel/interfaces.html#Middleware.handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.interfaces.Middleware.handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A middleware handler is an async generator. Given a parent generator that yields
+Events or batches of Events, it must yield the same.</p>
+<p>For example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">Event</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">yield</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>Post-processing logic can be added below, in a finally clause. This allows you
+to respond to errors further up the chain (e.g. in the final processor code):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">x</span>
+<span class="gp">... </span>    <span class="k">finally</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">await</span> <span class="n">logic</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This is needed because a GeneratorExit exception will be thrown into the yield
+point if an exception is raised in the calling code. (Also note that async
+generator finalization is scheduled by the Python runtime asynchronously, but
+the Runnel framework ensures it has finished before restarting a processor
+function.)</p>
+<p>If you only want to know if an exception was raised further up the chain, you
+can use the following:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">x</span>
+<span class="gp">... </span>    <span class="k">except</span> <span class="ne">GeneratorExit</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">await</span> <span class="n">cleanup</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="k">raise</span>
+</pre></div>
+</div>
+<p>(Note: Python requires that GeneratorExit it not ignored, so it must be reraised
+here to avoid a RuntimeError)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="runnel-constants">
+<h2>runnel.constants<a class="headerlink" href="#runnel-constants" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="runnel.constants.ExceptionPolicy">
+<em class="property">class </em><code class="sig-prename descclassname">runnel.constants.</code><code class="sig-name descname">ExceptionPolicy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/constants.html#ExceptionPolicy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.constants.ExceptionPolicy" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enum specifying how to handle exceptions raised in the user-provided processor
+coroutine.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">HALT</span></code>: Raise the exception, halting execution of the affected partition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QUARANTINE</span></code>: Mark the affected partition as poisoned, and continue with others.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IGNORE</span></code>: Suppress the exception and continue processing regardless.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@app</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">orders</span><span class="p">,</span> <span class="n">exception_policy</span><span class="o">=</span><span class="n">ExceptionPolicy</span><span class="o">.</span><span class="n">HALT</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">async</span> <span class="k">def</span> <span class="nf">printer</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">records</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cli.html" class="btn btn-neutral float-right" title="CLI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rebalance.html" class="btn btn-neutral float-left" title="Rebalance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

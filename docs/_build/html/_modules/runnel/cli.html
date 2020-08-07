@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>runnel.cli &mdash; Runnel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Runnel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide.html"> Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html"> Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../motivation.html"> Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html"> Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rebalance.html"> Rebalance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html"> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html"> CLI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Runnel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>runnel.cli</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for runnel.cli</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">import</span> <span class="nn">anyio</span>
+<span class="kn">import</span> <span class="nn">typer</span>
+
+<span class="kn">from</span> <span class="nn">runnel.utils</span> <span class="kn">import</span> <span class="n">get_object</span>
+<span class="kn">from</span> <span class="nn">runnel.worker</span> <span class="kn">import</span> <span class="n">Worker</span>
+
+<span class="n">cli</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Typer</span><span class="p">()</span>
+<span class="n">processor</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Typer</span><span class="p">()</span>
+<span class="n">cli</span><span class="o">.</span><span class="n">add_typer</span><span class="p">(</span><span class="n">processor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;processor&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="worker"><a class="viewcode-back" href="../../cli.html#runnel.cli.worker">[docs]</a><span class="nd">@cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">processors</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a worker for all processors of the given app, or just the processors given in a</span>
+<span class="sd">    comma-separated string.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Assuming &#39;myapp/example.py&#39; contains your Runnel app object:</span>
+
+<span class="sd">    .. code-block:: bash</span>
+
+<span class="sd">        $ runnel worker myapp.example:myapp</span>
+
+<span class="sd">    Or for specific processors:</span>
+
+<span class="sd">    .. code-block:: bash</span>
+
+<span class="sd">        $ runnel worker myapp.example:myapp --processors=myproc1,myproc2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="n">Worker</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">processors</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">processors</span> <span class="o">!=</span> <span class="s2">&quot;all&quot;</span> <span class="k">else</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="send"><a class="viewcode-back" href="../../cli.html#runnel.cli.send">[docs]</a><span class="nd">@cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">stream</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Send a given JSON-encoded value to a stream.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Assuming &#39;myapp/example.py&#39; contains a stream called &#39;actions&#39;:</span>
+
+<span class="sd">    .. code-block:: bash</span>
+
+<span class="sd">        $ runnel send myapp.example:actions &quot;{\\&quot;user_id\\&quot;: 1, \\&quot;type\\&quot;: \\&quot;signup\\&quot;}&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+    <span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">send</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="o">**</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="sendmany"><a class="viewcode-back" href="../../cli.html#runnel.cli.sendmany">[docs]</a><span class="nd">@cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">sendmany</span><span class="p">(</span><span class="n">stream</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">typer</span><span class="o">.</span><span class="n">FileText</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Send multiple JSON-encoded values to a stream in a pipelined transaction.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    .. code-block:: bash</span>
+
+<span class="sd">        $ echo &quot;{\\&quot;user_id\\&quot;: 1, \\&quot;type\\&quot;: \\&quot;signup\\&quot;}&quot; &gt;&gt; data.jsonl</span>
+<span class="sd">        $ echo &quot;{\\&quot;user_id\\&quot;: 2, \\&quot;type\\&quot;: \\&quot;signup\\&quot;}&quot; &gt;&gt; data.jsonl</span>
+
+<span class="sd">    Assuming &#39;myapp/example.py&#39; contains a stream called &#39;actions&#39;:</span>
+
+<span class="sd">    .. code-block:: bash</span>
+
+<span class="sd">        $ runnel sendmany myapp.example:actions data.jsonl</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+    <span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">send</span><span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="o">**</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">))</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">file</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="reset"><a class="viewcode-back" href="../../cli.html#runnel.cli.reset">[docs]</a><span class="nd">@processor</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reset the processor&#39;s starting ID and event backlog.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This will destroy and recreate the Redis consumer group(s) associated with the</span>
+<span class="sd">    processor and should be run once all workers have been shut down.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Assuming &#39;myapp/example.py&#39; contains a processor called &#39;printer&#39;:</span>
+
+<span class="sd">    .. code-block:: bash</span>
+
+<span class="sd">        runnel processor reset myapp.example:printer --start=&quot;0&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Matt Westcott
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
