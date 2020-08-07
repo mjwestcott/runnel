@@ -1,4 +1,5 @@
 name: Tests
+
 on:
   pull_request:
     branches: ["master"]
