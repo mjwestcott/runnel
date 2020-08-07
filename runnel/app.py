@@ -349,7 +349,7 @@ class App:
 
         return decorator
 
-    def crontab(self, *, spec: str, timezone=None, on_leader=False):
+    def crontab(self, spec: str, *, timezone=None, on_leader=False):
         """
         Define an async function to be run at the fixed times, defined by the Cron
         format (see `<https://crontab.guru/>`_ for examples).

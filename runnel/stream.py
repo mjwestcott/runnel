@@ -63,19 +63,31 @@ class Stream:
     def hash(self, key):
         return self.hasher(key) % self.partition_count
 
-    # TODO: Provide a way to specify the Redis stream ID of each entry. (This is needed
-    # for backfilling/failure recovery.)
-    async def send(self, *records: Iterable[Record]):
+    async def send(self, *records: Iterable[Record], stream_ids=None):
         """
         Send records to partitions of the stream, according to their partition keys.
+
+        Parameters
+        ----------
+        records : Iterable[Record]
+            The records to send.
+        stream_ids : Optional[Iterable[str]]
+            A list of stream_ids corresponding to the records. Must be the same length
+            as records. If ``None``, then ``"*"`` will be used for all records. See
+            `<https://redis.io/commands/xadd>`_ for more details.
         """
+        if not stream_ids:
+            stream_ids = ["*" for _ in range(len(records))]
+        assert len(stream_ids) == len(records)
+
         async with await self.app.redis.pipeline() as pipe:
-            for r in records:
+            for record, stream_id in zip(records, stream_ids):
                 await pipe.xadd(
-                    name=self.route(self._compute_key(r)),
-                    entry=self.serialize(r),
+                    name=self.route(self._compute_key(record)),
+                    entry=self.serialize(record),
                     max_len=self.partition_size,
                     approximate=True,
+                    stream_id=stream_id
                 )
             await pipe.execute()
 
