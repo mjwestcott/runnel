@@ -1,3 +1,5 @@
+from typing import Callable, Coroutine, Dict, Set
+
 import anyio
 import structlog
 from aredis import StrictRedis
@@ -8,6 +10,7 @@ from runnel.processor import Processor
 from runnel.settings import Settings
 from runnel.stream import Stream
 from runnel.utils import seconds_until
+from runnel.worker import Worker
 
 logger = structlog.get_logger(__name__)
 
@@ -67,10 +70,10 @@ class App:
         self.name: str = name
         self.settings: Settings = Settings(**kwargs)
         self.redis = StrictRedis.from_url(self.settings.redis_url)
-        self.workers = set()
-        self.tasks = set()
-        self.processors = {}
-        self.scripts = {}  # Lua scripts, loaded by workers at startup.
+        self.workers: Set[Worker] = set()
+        self.tasks: Set[Coroutine] = set()
+        self.processors: Dict[str, Coroutine] = {}
+        self.scripts: Dict[str, Callable] = {}
 
         init_logging(
             level=self.settings.log_level,

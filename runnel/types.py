@@ -27,7 +27,7 @@ class Partition:
     stream: "Stream"
     number: int
     pointer: bytes = b"0-0"
-    lock: anyio.Lock = field(default_factory=anyio.create_lock)
+    lock: anyio.abc.Lock = field(default_factory=anyio.create_lock)
 
     def __hash__(self):
         return object.__hash__(self)

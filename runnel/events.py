@@ -52,7 +52,7 @@ class Events:
     want: str = "events"
     batch_args: Optional[Tuple] = None
     failed: Set["Event"] = field(default_factory=set)
-    finalized: anyio.Event = field(default_factory=anyio.create_event)
+    finalized: anyio.abc.Event = field(default_factory=anyio.create_event)
     agen: AsyncIterator[Union["Event", List["Event"]]] = None
 
     @property

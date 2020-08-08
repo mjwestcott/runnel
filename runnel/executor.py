@@ -34,7 +34,7 @@ class Executor:
     id: str
     processor: "Processor"
     partitions: Dict[int, Partition] = field(default_factory=dict)
-    cond: anyio.Condition = field(default_factory=anyio.create_condition)
+    cond: anyio.abc.Condition = field(default_factory=anyio.create_condition)
     assigned: Set[Partition] = None
     owned: Set[Partition] = field(default_factory=set)
     poisoned: Set[Partition] = field(default_factory=set)

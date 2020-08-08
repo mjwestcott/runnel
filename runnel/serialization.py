@@ -38,6 +38,6 @@ class FastJSONSerializer(Serializer):
 
 
 if orjson:
-    default = FastJSONSerializer()
+    default: Serializer = FastJSONSerializer()
 else:
     default = JSONSerializer()

@@ -27,11 +27,11 @@ class Runner:
     """
     executor: "Executor"
     partitions: Dict[Partition, WatermarkQueue] = field(default_factory=dict)
-    new_joiner: anyio.Event = field(default_factory=anyio.create_event)
-    new_leaver: anyio.Event = field(default_factory=anyio.create_event)
-    fetch_completed: anyio.Event = field(default_factory=anyio.create_event)
+    new_joiner: anyio.abc.Event = field(default_factory=anyio.create_event)
+    new_leaver: anyio.abc.Event = field(default_factory=anyio.create_event)
+    fetch_completed: anyio.abc.Event = field(default_factory=anyio.create_event)
     fetching: Set[Partition] = field(default_factory=set)
-    pool: anyio.Semaphore = None
+    pool: anyio.abc.Semaphore = None
 
     def __post_init__(self):
         self.pool = anyio.create_semaphore(self.processor.pool_size)

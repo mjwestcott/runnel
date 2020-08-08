@@ -1,4 +1,5 @@
 from datetime import tzinfo
+from typing import Union
 
 import pytz
 from pydantic import BaseSettings, PyObject
@@ -102,8 +103,8 @@ class Settings(BaseSettings):
     # Stream defaults
     default_partition_count: int = 16
     default_partition_size = 50_000
-    default_serializer: PyObject = "runnel.serialization.default"
-    default_hasher: PyObject = "runnel.hashing.default"
+    default_serializer: Union[PyObject, str] = "runnel.serialization.default"
+    default_hasher: Union[PyObject, str] = "runnel.hashing.default"
 
     # Processor defaults
     default_exception_policy: ExceptionPolicy = ExceptionPolicy.HALT

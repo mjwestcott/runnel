@@ -37,11 +37,11 @@ class Compressor:
     ...     serializer=JSONSerializer(compressor=Gzip()),
     ... )
     """
-    def compress(value: bytes) -> bytes:
+    def compress(self, value: bytes) -> bytes:
         """Return compressed bytes."""
         raise NotImplementedError
 
-    def decompress(value: bytes) -> bytes:
+    def decompress(self, value: bytes) -> bytes:
         """Return decompressed bytes."""
         raise NotImplementedError
 
