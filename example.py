@@ -2,11 +2,11 @@ from datetime import datetime
 
 from runnel import App, Record
 
-app = App(name="example")
+# Run this app from the CLI via `$ runnel worker example:app`
+app = App(name="myapp", redis_url="redis://127.0.0.1")
 
 
-# Structured event types can be specified using the Record class. They will be
-# serialised and stored in a single field in the stream.
+# Specify event types using the Record class.
 class Order(Record):
     order_id: int
     created_at: datetime
@@ -22,7 +22,7 @@ async def sender():
     await orders.send(Order(order_id=1, created_at=datetime.utcnow(), amount=9.99))
 
 
-# Run the app from the CLI via `$ runnel worker example:app`
+# Iterate over a continuous stream of events in your processors.
 @app.processor(orders)
 async def printer(events):
     async for order in events.records():

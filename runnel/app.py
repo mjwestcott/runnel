@@ -68,8 +68,8 @@ class App:
         self.settings: Settings = Settings(**kwargs)
         self.redis = StrictRedis.from_url(self.settings.redis_url)
         self.workers = set()
-        self.processors = {}
         self.tasks = set()
+        self.processors = {}
         self.scripts = {}  # Lua scripts, loaded by workers at startup.
 
         init_logging(

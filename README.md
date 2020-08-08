@@ -16,35 +16,39 @@ events are created.
 ### Basic Usage
 
 ```python
-from runnel import App, Record
+from datetime import datetime
 
+from runnel import App, Record
 
 app = App(name="myapp", redis_url="redis://127.0.0.1")
 
 
+# Specify event types using the Record class.
 class Order(Record):
     order_id: int
     created_at: datetime
-    amount: int
+    amount: float
 
 
 orders = app.stream("orders", record=Order, partition_by="order_id")
 
 
+# Every 4 seconds, send an example record to the stream.
+@app.timer(interval=4)
+async def sender():
+    await orders.send(Order(order_id=1, created_at=datetime.utcnow(), amount=9.99))
+
+
+# Iterate over a continuous stream of events in your processors.
 @app.processor(orders)
 async def printer(events):
     async for order in events.records():
-        print(order.amount)
+        print(f"processed {order.amount}")
 ```
 
 Meanwhile, run the worker (assuming code in `example.py`):
 ```bash
 $ runnel worker example:app
-```
-
-And send some events:
-```bash
-$ runnel send example:orders "{\"order_id\": 1, \"created_at\": \"2020-07-21T22:09:37Z\" , \"amount\": 99}"
 ```
 
 ### Features
