@@ -80,7 +80,7 @@ class Worker:
         logger.info("starting-worker", processors=processors)
 
         # Import all modules likely to contain Runnel objects (e.g. processors, tasks)
-        # that must be registered with the app, defaults to importing "**/streams.py".
+        # that must be registered with the app.
         autodiscover(self.app)
 
         # Load lua scripts.

@@ -28,8 +28,9 @@ class Settings(BaseSettings):
     autodiscover : str
         The pattern for :func:`pathlib.Path.glob` to find modules containing
         Runnel app-decorated functions (e.g. processors, tasks), which the worker must
-        import on startup. Will be called relative to current working directory. Can be
-        set to the empty string to disable. Default ``'**/streams.py'``.
+        import on startup. Will be called relative to current working directory. For
+        example, use ``'myproj/**/streams.py'`` to find all modules called 'streams'
+        inside the 'myproj' folder. Default ``None``.
     timezone : tzinfo
         The timezone to use by default for ``app.crontab`` schedules. Default: ``pytz.UTC``.
     leadership_poll_interval : int (milliseconds)
@@ -95,7 +96,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://127.0.0.1:6379"
     log_format: str = "console"
     log_level: str = "info"
-    autodiscover: str = "**/streams.py"
+    autodiscover: str = None
     timezone: tzinfo = pytz.UTC
     leadership_poll_interval: int = 4000
     testing: bool = False
