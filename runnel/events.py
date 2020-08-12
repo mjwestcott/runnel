@@ -177,7 +177,7 @@ class Events:
 
     async def root(self):
         queue = self.runner.partitions[self.partition]
-        timeout = max(0.1, min(1, self.executor.processor.grace_period / 4))
+        timeout = self.executor.processor.grace_period / 4
 
         while self.partition in self.executor.safe_partitions:
             async with anyio.move_on_after(timeout) as scope:

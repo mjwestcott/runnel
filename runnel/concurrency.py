@@ -26,7 +26,8 @@ async def race(*coros):
 
         result = await receive_stream.receive()
         await tg.cancel_scope.cancel()
-        return result
+
+    return result
 
 
 @asynccontextmanager

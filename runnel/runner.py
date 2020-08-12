@@ -218,7 +218,7 @@ class Runner:
                 continue
 
             for xid, data in values:
-                logger.debug("putting", xid=xid, data=data)
+                logger.debug("putting", partition=partition.number, xid=xid, data=data)
                 await queue.put(
                     Event(
                         runner=self,

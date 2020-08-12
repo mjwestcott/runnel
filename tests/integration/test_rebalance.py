@@ -1,6 +1,3 @@
-import random
-from itertools import count
-
 import pytest
 
 from runnel.record import Record
@@ -16,13 +13,17 @@ class Action(Record, primitive=True):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("batch_size", [1, 11])
 async def test_sequential(app, results, batch_size):
-    seq = count()
     bulk = 33
     keys = list("ABCDEFGHIJ")
-    actions = app.stream("actions", record=Action, partition_by="key")
+    actions = app.stream(
+        "actions",
+        record=Action,
+        partition_by="key",
+        partition_count=3,
+    )
 
     async def send():
-        await actions.send(*[Action(key=random.choice(keys), seq=next(seq)) for _ in range(bulk)])
+        await actions.send(*[Action(key=keys[i % len(keys)], seq=i) for i in range(bulk)])
 
     @app.processor(actions, grace_period=1, assignment_sleep=0.3)
     async def proc(events):
@@ -44,14 +45,11 @@ async def test_sequential(app, results, batch_size):
             await wait_running(w1, w2)
             async with worker(app) as w3:
                 await wait_running(w1, w2, w3)
-                async with worker(app) as w4:
-                    await wait_running(w1, w2, w3, w4)
-                    await send()
+                await send()
 
-                    # Ensure existing events are processed before killing workers.
-                    await wait_done(results, count=bulk, delay=4, debug_key=event_id)
+                # Ensure existing events are processed, then kill workers.
+                await wait_done(results, count=bulk, delay=4, debug_key=event_id)
 
-                await wait_running(w1, w2, w3)
             await wait_running(w1, w2)
         await wait_running(w1)
         await send()

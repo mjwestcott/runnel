@@ -37,7 +37,13 @@ async def test_policy_halt(app, results):
 async def test_policy_quarantine(app, results):
     seq = count()
     keys = ["A", "B"]
-    actions = app.stream("actions", record=Action, partition_by="key", partition_count=2)
+    actions = app.stream(
+        "actions",
+        record=Action,
+        partition_by="key",
+        partition_count=2,
+        hasher=lambda key: 0 if key == "A" else 1,
+    )
 
     # Ensure that events are split between the two partitions.
     assert actions.route(keys[0]) != actions.route(keys[1])

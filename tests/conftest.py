@@ -48,7 +48,7 @@ def app(seq):
         name=f"testapp-{next(seq)}",
         default_partition_count=8,
         default_lock_expiry=2,
-        default_grace_period=0.2,
+        default_grace_period=1,
         default_read_timeout=50,
         default_prefetch_count=4,
         default_assignment_sleep=0.4,
