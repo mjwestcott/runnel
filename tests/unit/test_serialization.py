@@ -1,7 +1,9 @@
 from typing import Dict, List
 
+import pytest
+
 from runnel.record import Record
-from runnel.serialization import default
+from runnel.serialization import FastJSONSerializer, JSONSerializer
 
 
 def test_primitive(app):
@@ -24,14 +26,15 @@ def test_primitive(app):
     assert s.deserialize(response) == r
 
 
-def test_complex1(app):
+@pytest.mark.parametrize('serializer', [JSONSerializer(), FastJSONSerializer()])
+def test_complex1(app, serializer):
     class R(Record):
         a: int
         b: float
         c: bool
         d: str
 
-    s = app.stream("s", record=R, partition_by="a", serializer=default)
+    s = app.stream("s", record=R, partition_by="a", serializer=serializer)
     r = R(a=1, b=0.5, c=True, d="x")
 
     # Complex data types are serialized to a single 'data' field as JSON bytes
@@ -40,19 +43,21 @@ def test_complex1(app):
     assert s.deserialize(s.serialize(r)) == r
 
 
-def test_complex2(app):
+@pytest.mark.parametrize('serializer', [JSONSerializer(), FastJSONSerializer()])
+def test_complex2(app, serializer):
     class R(Record):
         a: List[int]
         b: Dict[str, float]
 
-    s = app.stream("s", record=R, partition_by="a", serializer=default)
+    s = app.stream("s", record=R, partition_by="a", serializer=serializer)
     r = R(a=[1], b={"y": 0.5})
 
     assert s.serialize(r) == {b"data": b'{"a":[1],"b":{"y":0.5}}'}
     assert s.deserialize(s.serialize(r)) == r
 
 
-def test_complex3(app):
+@pytest.mark.parametrize('serializer', [JSONSerializer(), FastJSONSerializer()])
+def test_complex3(app, serializer):
     class Child(Record):
         a: int
 
@@ -60,7 +65,7 @@ def test_complex3(app):
         a: int
         children: List[Child]
 
-    s = app.stream("s", record=Parent, partition_by="a", serializer=default)
+    s = app.stream("s", record=Parent, partition_by="a", serializer=serializer)
     p = Parent(a=1, children=[Child(a=1), Child(a=2)])
 
     assert s.serialize(p) == {b"data": b'{"a":1,"children":[{"a":1},{"a":2}]}'}

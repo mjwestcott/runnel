@@ -20,7 +20,11 @@ class JSONSerializer(Serializer):
         return obj
 
     def dumps(self, value):
-        return json.dumps(value, default=self._default).encode("utf-8")
+        return json.dumps(
+            obj=value,
+            default=self._default,
+            separators=(',', ':'),
+        ).encode("utf-8")
 
     def loads(self, value):
         return json.loads(value)
