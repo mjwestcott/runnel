@@ -13,6 +13,12 @@ Whereas traditional job queues do not provide ordering guarantees, Runnel is
 designed to process partitions of your event stream strictly in the order
 events are created.
 
+### Installation
+
+```bash
+pip install runnel
+```
+
 ### Basic Usage
 
 ```python
@@ -65,8 +71,8 @@ Designed to support a similar paradigm to Kafka Streams, but on top of Redis.
 * A builtin batching mechanism to efficiently process events in bulk
 * A `runnel[fast]` bundle for C or Rust extension dependencies ([uvloop](https://github.com/MagicStack/uvloop), [xxhash](https://github.com/Cyan4973/xxHash), [orjson](https://github.com/ijl/orjson), [lz4](https://github.com/python-lz4/python-lz4))
 
-### Installation
+### Local development
 
-```bash
-pip install runnel
-```
+To run the test suite locally, install the optional deps (e.g. via `poetry install -E fast`)
+and run `pytest`. You'll need to have Redis running on localhost at port 6379.
+You can run the tests for all supported Python versions via `tox`.
