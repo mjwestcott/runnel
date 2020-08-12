@@ -290,6 +290,32 @@ defined for your app. You can instead select specific processors:
     $ runnel worker myapp.example:myapp --processors=myproc1,myproc2
 
 
+Project layout
+--------------
+
+Runnel uses decorators to register your processors and background tasks against your app
+object. Those decorators must run when your Worker starts up. To ensure this happens,
+even if your code is spread across multiple folders, we offer an 'autodiscover' feature:
+
+.. code-block:: python
+
+    from runnel import App
+
+    app = App(
+        name="myapp",
+        redis_url="redis://127.0.0.1",
+        autodiscover="myproj/**/streams.py",  # <-- Specify your glob pattern here.
+    )
+
+When set, the worker will search the filesystem using Python's ``pathlib.Path.glob``
+function and import any modules that match. In the above example, you could place your
+processors in any file named 'streams.py' anywhere in your project.
+
+This feature is disabled by default because specifying the base directory (e.g.
+``myproj``) helps make the search efficient. For small projects, you can simply place
+your processor code in the same file in which you define your app.
+
+
 Acknowledgement
 ---------------
 

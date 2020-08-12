@@ -152,7 +152,9 @@
            <div itemprop="articleBody">
             
   <h1>Source code for runnel.app</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">anyio</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">import</span> <span class="nn">anyio</span>
 <span class="kn">import</span> <span class="nn">structlog</span>
 <span class="kn">from</span> <span class="nn">aredis</span> <span class="kn">import</span> <span class="n">StrictRedis</span>
 
@@ -162,6 +164,7 @@
 <span class="kn">from</span> <span class="nn">runnel.settings</span> <span class="kn">import</span> <span class="n">Settings</span>
 <span class="kn">from</span> <span class="nn">runnel.stream</span> <span class="kn">import</span> <span class="n">Stream</span>
 <span class="kn">from</span> <span class="nn">runnel.utils</span> <span class="kn">import</span> <span class="n">seconds_until</span>
+<span class="kn">from</span> <span class="nn">runnel.worker</span> <span class="kn">import</span> <span class="n">Worker</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -221,10 +224,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">redis</span> <span class="o">=</span> <span class="n">StrictRedis</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">redis_url</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">workers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">processors</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Lua scripts, loaded by workers at startup.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Worker</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Coroutine</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="n">init_logging</span><span class="p">(</span>
             <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">log_level</span><span class="p">,</span>

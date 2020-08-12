@@ -100,6 +100,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#background-tasks">Background tasks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#running-a-worker">Running a worker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#project-layout">Project layout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#acknowledgement">Acknowledgement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exception-handling">Exception handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#creating-middleware">Creating middleware</a></li>
@@ -403,6 +404,27 @@ defined for your app. You can instead select specific processors:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ runnel worker myapp.example:myapp --processors<span class="o">=</span>myproc1,myproc2
 </pre></div>
 </div>
+</div>
+<div class="section" id="project-layout">
+<h2>Project layout<a class="headerlink" href="#project-layout" title="Permalink to this headline">¶</a></h2>
+<p>Runnel uses decorators to register your processors and background tasks against your app
+object. Those decorators must run when your Worker starts up. To ensure this happens,
+even if your code is spread across multiple folders, we offer an ‘autodiscover’ feature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">App</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;myapp&quot;</span><span class="p">,</span>
+    <span class="n">redis_url</span><span class="o">=</span><span class="s2">&quot;redis://127.0.0.1&quot;</span><span class="p">,</span>
+    <span class="n">autodiscover</span><span class="o">=</span><span class="s2">&quot;myproj/**/streams.py&quot;</span><span class="p">,</span>  <span class="c1"># &lt;-- Specify your glob pattern here.</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>When set, the worker will search the filesystem using Python’s <code class="docutils literal notranslate"><span class="pre">pathlib.Path.glob</span></code>
+function and import any modules that match. In the above example, you could place your
+processors in any file named ‘streams.py’ anywhere in your project.</p>
+<p>This feature is disabled by default because specifying the base directory (e.g.
+<code class="docutils literal notranslate"><span class="pre">myproj</span></code>) helps make the search efficient. For small projects, you can simply place
+your processor code in the same file in which you define your app.</p>
 </div>
 <div class="section" id="acknowledgement">
 <h2>Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permalink to this headline">¶</a></h2>

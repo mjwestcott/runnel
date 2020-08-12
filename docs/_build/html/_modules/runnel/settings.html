@@ -153,6 +153,7 @@
             
   <h1>Source code for runnel.settings</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">tzinfo</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">pytz</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseSettings</span><span class="p">,</span> <span class="n">PyObject</span>
@@ -181,8 +182,9 @@
 <span class="sd">    autodiscover : str</span>
 <span class="sd">        The pattern for :func:`pathlib.Path.glob` to find modules containing</span>
 <span class="sd">        Runnel app-decorated functions (e.g. processors, tasks), which the worker must</span>
-<span class="sd">        import on startup. Will be called relative to current working directory. Can be</span>
-<span class="sd">        set to the empty string to disable. Default ``&#39;**/streams.py&#39;``.</span>
+<span class="sd">        import on startup. Will be called relative to current working directory. For</span>
+<span class="sd">        example, use ``&#39;myproj/**/streams.py&#39;`` to find all modules called &#39;streams&#39;</span>
+<span class="sd">        inside the &#39;myproj&#39; folder. Default ``None``.</span>
 <span class="sd">    timezone : tzinfo</span>
 <span class="sd">        The timezone to use by default for ``app.crontab`` schedules. Default: ``pytz.UTC``.</span>
 <span class="sd">    leadership_poll_interval : int (milliseconds)</span>
@@ -248,7 +250,7 @@
     <span class="n">redis_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;redis://127.0.0.1:6379&quot;</span>
     <span class="n">log_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;console&quot;</span>
     <span class="n">log_level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span>
-    <span class="n">autodiscover</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;**/streams.py&quot;</span>
+    <span class="n">autodiscover</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">timezone</span><span class="p">:</span> <span class="n">tzinfo</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">UTC</span>
     <span class="n">leadership_poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4000</span>
     <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -256,8 +258,8 @@
     <span class="c1"># Stream defaults</span>
     <span class="n">default_partition_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span>
     <span class="n">default_partition_size</span> <span class="o">=</span> <span class="mi">50_000</span>
-    <span class="n">default_serializer</span><span class="p">:</span> <span class="n">PyObject</span> <span class="o">=</span> <span class="s2">&quot;runnel.serialization.default&quot;</span>
-    <span class="n">default_hasher</span><span class="p">:</span> <span class="n">PyObject</span> <span class="o">=</span> <span class="s2">&quot;runnel.hashing.default&quot;</span>
+    <span class="n">default_serializer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PyObject</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;runnel.serialization.default&quot;</span>
+    <span class="n">default_hasher</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PyObject</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;runnel.hashing.default&quot;</span>
 
     <span class="c1"># Processor defaults</span>
     <span class="n">default_exception_policy</span><span class="p">:</span> <span class="n">ExceptionPolicy</span> <span class="o">=</span> <span class="n">ExceptionPolicy</span><span class="o">.</span><span class="n">HALT</span>
