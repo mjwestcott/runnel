@@ -13,14 +13,14 @@ def event_id(i):
     return f"__event:{i}__"
 
 
-async def wait_started(*workers, delay=2):
+async def wait_started(*workers, delay=4):
     async with anyio.fail_after(delay):
         for w in workers:
             while not w.started:
                 await anyio.sleep(0.005)
 
 
-async def wait_running(*workers, delay=2):
+async def wait_running(*workers, delay=4):
     async with anyio.fail_after(delay):
         for w in workers:
             while not w.started:
@@ -29,7 +29,7 @@ async def wait_running(*workers, delay=2):
                 await e.wait_for(lambda: e.rebalanced)
 
 
-async def wait_done(results, count, delay=2, debug_key=None):
+async def wait_done(results, count, delay=4, debug_key=None):
     async def _wait():
         async with anyio.fail_after(delay):
             while True:
@@ -57,7 +57,7 @@ async def wait_done(results, count, delay=2, debug_key=None):
         await _wait()
 
 
-async def wait_atleast(results, count, delay=2, sleep=0.05):
+async def wait_atleast(results, count, delay=4, sleep=0.05):
     async with anyio.fail_after(delay):
         while True:
             found = await results.count()
