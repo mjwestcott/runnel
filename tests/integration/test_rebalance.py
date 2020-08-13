@@ -1,3 +1,6 @@
+import random
+from itertools import count
+
 import pytest
 
 from runnel.record import Record
@@ -13,6 +16,7 @@ class Action(Record, primitive=True):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("batch_size", [1, 11])
 async def test_sequential(app, results, batch_size):
+    seq = count()
     bulk = 33
     keys = list("ABCDEFGHIJ")
     actions = app.stream(
@@ -23,17 +27,23 @@ async def test_sequential(app, results, batch_size):
     )
 
     async def send():
-        await actions.send(*[Action(key=keys[i % len(keys)], seq=i) for i in range(bulk)])
+        await actions.send(*[Action(key=random.choice(keys), seq=next(seq)) for _ in range(bulk)])
 
     @app.processor(actions, grace_period=1, assignment_sleep=0.3)
     async def proc(events):
+        last_seen = {key: -1 for key in keys}
+
         if batch_size == 1:
             async for obj in events.records():
+                assert obj.seq > last_seen[obj.key]
+                last_seen[obj.key] = obj.seq
                 await results.incr()
                 await results.redis.incr(event_id(obj.seq))
         else:
             async for batch in events.take(batch_size, within=0.1).records():
                 for obj in batch:
+                    assert obj.seq > last_seen[obj.key]
+                    last_seen[obj.key] = obj.seq
                     await results.incr()
                     await results.redis.incr(event_id(obj.seq))
 
