@@ -26,6 +26,8 @@ class Processor:
 
     A processor will be run by one or more executors. Each executor will be responsible
     for processing a different subset of partitions of the underlying Redis streams.
+
+    Not intended to be used directly. Use :attr:`runnel.App.processor` instead.
     """
     stream: "Stream"
     f: Coroutine

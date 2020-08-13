@@ -5,6 +5,7 @@ import structlog
 from aredis import StrictRedis
 
 from runnel import context
+from runnel.exceptions import Misconfigured
 from runnel.logging import init_logging
 from runnel.processor import Processor
 from runnel.settings import Settings
@@ -164,6 +165,7 @@ class App:
     def processor(
         self,
         stream,
+        *,
         name=None,
         exception_policy=None,
         middleware=None,
@@ -193,6 +195,11 @@ class App:
 
         Parameters
         ----------
+        stream : runnel.App.stream
+            The stream this processor will iterate over.
+        name : str
+            Used in the Redis keys relating to this processor. Must be unique together
+            with the App and Stream. Default: your function's ``__name__``.
         exception_policy : ExceptionPolicy
             How to handle exceptions raised in the user-provided processor coroutine.
 
@@ -248,6 +255,9 @@ class App:
         ...     async for order in events.records():
         ...         print(order.amount)
         """
+        if not isinstance(stream, Stream):
+            raise Misconfigured("You must pass a stream to the app.processor decorator")
+
         kwargs = {
             "exception_policy": exception_policy or self.settings.default_exception_policy,
             "middleware": middleware or [],
@@ -262,17 +272,15 @@ class App:
         }
 
         def decorator(f):
-            x = name or f.__name__
-            assert x not in self.processors
+            nonlocal name
+            proc = Processor(stream=stream, f=f, name=name or f.__name__, **kwargs)
+            logger.debug("found-processor", name=proc.name)
 
-            logger.debug("found-processor", name=x)
-            self.processors[x] = Processor(
-                stream=stream,
-                f=f,
-                name=x,
-                **kwargs,
-            )
-            return self.processors[x]
+            if proc.id in self.processors:
+                raise Misconfigured("Processor name must be unique within an App and Stream")
+
+            self.processors[proc.id] = proc
+            return proc
 
         return decorator
 

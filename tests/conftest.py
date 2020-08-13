@@ -7,6 +7,7 @@ import pytest
 from runnel import App
 from runnel.logging import init_logging
 from runnel.settings import Settings
+from tests.helpers.records import Order
 from tests.helpers.results import Results
 
 init_logging()
@@ -56,6 +57,11 @@ def app(seq):
         default_pool_size=2,
         default_join_delay=0,
     )
+
+
+@pytest.fixture
+def stream(app):
+    return app.stream("teststream", record=Order, partition_by="id")
 
 
 @pytest.fixture

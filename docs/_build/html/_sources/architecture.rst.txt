@@ -105,30 +105,30 @@ Assume that we are running the following application:
 
 The following Redis keys will be used:
 
-``__strm:example.orders.{partition_number}``
+``__strm:myapp.orders.{partition_number}``
     The partitioned stream data structures for events. `partition_number` is an integer
     from 0 to 1-`partition_count`.
 
-``__memb:example.orders.printer``
+``__memb:myapp.orders.printer``
     A string key holding JSON-encoded membership data for existing executors. Contains
     the mapping from executors to the partitions they have been assigned.
 
-``__ctrl:example.orders.printer``
+``__ctrl:myapp.orders.printer``
     A stream for communicating control messages between executors. Used to announce
     joining/leaving workers which triggers a rebalance.
 
-``__lock:example.orders.printer.{partition_number}``
+``__lock:myapp.orders.printer.{partition_number}``
     A lock for every stream partition. Should be owned by the assigned executor. Must be
     owned before processing a partition.
 
-``__lock:example.orders.printer.admin``
+``__lock:myapp.orders.printer.admin``
     A lock to protect atomic admin operations, such as changing the partition
     assignments.
 
-``__beat:example.orders.printer.{executor_id}``
+``__beat:myapp.orders.printer.{executor_id}``
     An expiring string key to indicate that an executor is still alive. `executor_id` is
     a uuid.
 
-``__lead:example``
+``__lead:myapp``
     Holds the name of the current lead worker, which is responsible for running
     background tasks for which ``on_leader=True``.

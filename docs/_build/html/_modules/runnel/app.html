@@ -159,6 +159,7 @@
 <span class="kn">from</span> <span class="nn">aredis</span> <span class="kn">import</span> <span class="n">StrictRedis</span>
 
 <span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">context</span>
+<span class="kn">from</span> <span class="nn">runnel.exceptions</span> <span class="kn">import</span> <span class="n">Misconfigured</span>
 <span class="kn">from</span> <span class="nn">runnel.logging</span> <span class="kn">import</span> <span class="n">init_logging</span>
 <span class="kn">from</span> <span class="nn">runnel.processor</span> <span class="kn">import</span> <span class="n">Processor</span>
 <span class="kn">from</span> <span class="nn">runnel.settings</span> <span class="kn">import</span> <span class="n">Settings</span>
@@ -318,6 +319,7 @@
 <div class="viewcode-block" id="App.processor"><a class="viewcode-back" href="../../reference.html#runnel.App.processor">[docs]</a>    <span class="k">def</span> <span class="nf">processor</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">stream</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">exception_policy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">middleware</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -347,6 +349,11 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        stream : runnel.App.stream</span>
+<span class="sd">            The stream this processor will iterate over.</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Used in the Redis keys relating to this processor. Must be unique together</span>
+<span class="sd">            with the App and Stream. Default: your function&#39;s ``__name__``.</span>
 <span class="sd">        exception_policy : ExceptionPolicy</span>
 <span class="sd">            How to handle exceptions raised in the user-provided processor coroutine.</span>
 
@@ -402,6 +409,9 @@
 <span class="sd">        ...     async for order in events.records():</span>
 <span class="sd">        ...         print(order.amount)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Stream</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">Misconfigured</span><span class="p">(</span><span class="s2">&quot;You must pass a stream to the app.processor decorator&quot;</span><span class="p">)</span>
+
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;exception_policy&quot;</span><span class="p">:</span> <span class="n">exception_policy</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">default_exception_policy</span><span class="p">,</span>
             <span class="s2">&quot;middleware&quot;</span><span class="p">:</span> <span class="n">middleware</span> <span class="ow">or</span> <span class="p">[],</span>
@@ -416,17 +426,15 @@
         <span class="p">}</span>
 
         <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span>
-            <span class="k">assert</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span>
+            <span class="k">nonlocal</span> <span class="n">name</span>
+            <span class="n">proc</span> <span class="o">=</span> <span class="n">Processor</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span> <span class="ow">or</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;found-processor&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">proc</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;found-processor&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">Processor</span><span class="p">(</span>
-                <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span>
-                <span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">Misconfigured</span><span class="p">(</span><span class="s2">&quot;Processor name must be unique within an App and Stream&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">[</span><span class="n">proc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">proc</span>
+            <span class="k">return</span> <span class="n">proc</span>
 
         <span class="k">return</span> <span class="n">decorator</span></div>
 

@@ -244,25 +244,25 @@ the consumer’s partition is no longer owned by this Executor due to a <a class
 </div>
 <p>The following Redis keys will be used:</p>
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">__strm:example.orders.{partition_number}</span></code></dt><dd><p>The partitioned stream data structures for events. <cite>partition_number</cite> is an integer
+<dt><code class="docutils literal notranslate"><span class="pre">__strm:myapp.orders.{partition_number}</span></code></dt><dd><p>The partitioned stream data structures for events. <cite>partition_number</cite> is an integer
 from 0 to 1-<cite>partition_count</cite>.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">__memb:example.orders.printer</span></code></dt><dd><p>A string key holding JSON-encoded membership data for existing executors. Contains
+<dt><code class="docutils literal notranslate"><span class="pre">__memb:myapp.orders.printer</span></code></dt><dd><p>A string key holding JSON-encoded membership data for existing executors. Contains
 the mapping from executors to the partitions they have been assigned.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">__ctrl:example.orders.printer</span></code></dt><dd><p>A stream for communicating control messages between executors. Used to announce
+<dt><code class="docutils literal notranslate"><span class="pre">__ctrl:myapp.orders.printer</span></code></dt><dd><p>A stream for communicating control messages between executors. Used to announce
 joining/leaving workers which triggers a rebalance.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">__lock:example.orders.printer.{partition_number}</span></code></dt><dd><p>A lock for every stream partition. Should be owned by the assigned executor. Must be
+<dt><code class="docutils literal notranslate"><span class="pre">__lock:myapp.orders.printer.{partition_number}</span></code></dt><dd><p>A lock for every stream partition. Should be owned by the assigned executor. Must be
 owned before processing a partition.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">__lock:example.orders.printer.admin</span></code></dt><dd><p>A lock to protect atomic admin operations, such as changing the partition
+<dt><code class="docutils literal notranslate"><span class="pre">__lock:myapp.orders.printer.admin</span></code></dt><dd><p>A lock to protect atomic admin operations, such as changing the partition
 assignments.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">__beat:example.orders.printer.{executor_id}</span></code></dt><dd><p>An expiring string key to indicate that an executor is still alive. <cite>executor_id</cite> is
+<dt><code class="docutils literal notranslate"><span class="pre">__beat:myapp.orders.printer.{executor_id}</span></code></dt><dd><p>An expiring string key to indicate that an executor is still alive. <cite>executor_id</cite> is
 a uuid.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">__lead:example</span></code></dt><dd><p>Holds the name of the current lead worker, which is responsible for running
+<dt><code class="docutils literal notranslate"><span class="pre">__lead:myapp</span></code></dt><dd><p>Holds the name of the current lead worker, which is responsible for running
 background tasks for which <code class="docutils literal notranslate"><span class="pre">on_leader=True</span></code>.</p>
 </dd>
 </dl>
