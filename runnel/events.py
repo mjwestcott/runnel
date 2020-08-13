@@ -177,7 +177,7 @@ class Events:
 
     async def root(self):
         queue = self.runner.partitions[self.partition]
-        timeout = self.executor.processor.grace_period / 4
+        timeout = max(0.05, min(1, self.executor.processor.grace_period / 4))
 
         while self.partition in self.executor.safe_partitions:
             # XXX: This pattern is currently broken in AnyIO master:
