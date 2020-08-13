@@ -2,9 +2,9 @@ from functools import lru_cache
 from hashlib import md5
 
 try:
-    from xxhash import xxh32
+    from xxhash import xxh64
 except ImportError:
-    xxh32 = None
+    xxh64 = None
 
 
 @lru_cache
@@ -14,10 +14,10 @@ def md5hash(x):
 
 @lru_cache
 def fasthash(x):
-    return xxh32(repr(x)).intdigest()
+    return xxh64(repr(x)).intdigest()
 
 
-if xxh32:
+if xxh64:
     default = fasthash
 else:
     default = md5hash
