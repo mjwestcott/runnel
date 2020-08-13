@@ -274,7 +274,10 @@ class Executor:
         async with await client.pipeline(transaction=True) as pipe:
             for key in keys:
                 await fn.execute(client=pipe, keys=[key], args=[self.id])
-            await pipe.execute()
+
+            # Shield the execution from cancellation to ensure the locks are released.
+            async with anyio.fail_after(4, shield=True):
+                await pipe.execute()
 
         try:
             await self.set_owned(self.owned - partitions)
