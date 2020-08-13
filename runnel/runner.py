@@ -63,7 +63,7 @@ class Runner:
     async def wait_queues_ready(self, queues):
         await race(*[q.wait_for_watermark() for q in queues])
 
-    async def wait_for_fetch(self):
+    async def wait_until_should_fetch(self):
         coros = [self.new_joiner.wait(), self.fetch_completed.wait()]
         queues = [self.partitions[p] for p in self.can_fetch()]
         if queues:
@@ -78,15 +78,26 @@ class Runner:
             try:
                 yield
             finally:
-                logger.debug("consumer-exit")
+                logger.debug("consumer-cleanup")
                 # Reset the the partition's pointer so that the next task to take
                 # ownership starts by reading the pending entries list. This is
                 # necessary because any events we have prefetched and are currently
                 # queued up will be deleted in the next line.
                 partition.reset()
                 del self.partitions[partition]
+                # Wait until any pending fetches for the partition complete. Otherwise,
+                # there's a race condition between the current fetcher and the one that
+                # will own the partition next. This fetcher will read, but not ack, and
+                # any events will stay in the PEL. Since we read as the same Redis
+                # group/consumer, depending on its startup time the new owner might miss
+                # the events read by this fetcher.
+                while partition in self.fetching:
+                    await self.fetch_completed.wait()
+                # Notify any waiting tasks that we are about to exit and relinquish our
+                # run lock.
                 await self.new_leaver.set()
                 self.new_leaver = anyio.create_event()
+                logger.debug("consumer-exit")
 
     async def run(self):
         try:
@@ -183,8 +194,8 @@ class Runner:
                     self.fetching.update(partitions)
                     await tg.spawn(self.fetch, partitions)
                 else:
-                    logger.debug("waiting-should-fetch")
-                    await self.wait_for_fetch()
+                    logger.debug("waiting-until-should-fetch")
+                    await self.wait_until_should_fetch()
 
     async def fetch(self, partitions):
         try:
@@ -215,6 +226,7 @@ class Runner:
                 # A partition has left since beginning the fetch. (Its consumer could
                 # have failed and exited, or it could have been reassigned in a
                 # rebalance.)
+                logger.debug("fetched-partition-not-owned", partition=partition)
                 continue
 
             for xid, data in values:
