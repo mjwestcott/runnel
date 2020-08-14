@@ -352,7 +352,7 @@ class App:
                     while True:
                         await anyio.sleep(interval)
                         if not on_leader or self.is_leader:
-                            logger.info("spawning-timer-task", name=f.__name__)
+                            logger.debug("spawning-timer-task", name=f.__name__)
                             await tg.spawn(f, *args)
 
             logger.debug("found-timer", name=f.__name__)
@@ -400,7 +400,7 @@ class App:
                     while True:
                         await anyio.sleep(seconds_until(spec, _tz))
                         if not on_leader or self.is_leader:
-                            logger.info("spawning-cron-task", name=f.__name__)
+                            logger.debug("spawning-cron-task", name=f.__name__)
                             await tg.spawn(f, *args)
 
             logger.debug("found-cron", name=f.__name__)
