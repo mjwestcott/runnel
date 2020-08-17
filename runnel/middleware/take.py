@@ -50,7 +50,7 @@ class Take(Middleware):
         for _ in range(self.n):
             try:
                 batch.append(await receive_stream.receive_nowait())
-            except anyio.exceptions.WouldBlock:
+            except anyio.WouldBlock:
                 logger.debug("took-too-few", have=len(batch), wanted=self.n)
                 break
         logger.debug("take-consumed", batch=[e.data for e in batch])

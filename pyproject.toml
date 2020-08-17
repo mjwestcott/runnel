@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "runnel"
-version = "0.1.0-alpha.2"
+version = "0.1.0a2"
 description = "Distributed event processing for Python based on Redis Streams"
 authors = ["Matt Westcott <m.westcott@gmail.com>"]
 license = "LGPLv3"
@@ -16,8 +16,7 @@ colorama = "^0.4.3"
 aiostream = "^0.4.1"
 croniter = "^0.3.34"
 pytz = "^2020.1"
-# XXX: Temporarily using master until v2.0 released
-anyio = {git = "https://github.com/agronholm/anyio.git", branch = "master"}
+anyio = { version = "^2.0.0-beta.1", allow-prereleases = true }
 
 # For the 'fast' bundle
 uvloop = { version = "^0.14.0", optional = true }
