@@ -33,7 +33,7 @@ Basic Usage
         async for order in events.records():
             print(order.amount)
 
-Meanwhile, run the worker (assuming code in `example.py`):
+Meanwhile, run the worker (assuming code in `example.py` and `PYTHONPATH` is set):
 
 .. code-block:: bash
 

@@ -454,7 +454,7 @@ int, float, bool, str, and bytes are allowed.</p>
 
 <dl class="py class">
 <dt id="runnel.Events">
-<em class="property">class </em><code class="sig-prename descclassname">runnel.</code><code class="sig-name descname">Events</code><span class="sig-paren">(</span><em class="sig-param">runner: Runner</em>, <em class="sig-param">partition: Partition</em>, <em class="sig-param">want: str = 'events'</em>, <em class="sig-param">batch_args: Optional[Tuple] = None</em>, <em class="sig-param">failed: Set[Event] = &lt;factory&gt;</em>, <em class="sig-param">finalized: anyio.abc.synchronization.Event = &lt;factory&gt;</em>, <em class="sig-param">agen: AsyncIterator[Union[Event</em>, <em class="sig-param">List[Event]]] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/events.html#Events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Events" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">runnel.</code><code class="sig-name descname">Events</code><span class="sig-paren">(</span><em class="sig-param">runner: Runner</em>, <em class="sig-param">partition: Partition</em>, <em class="sig-param">want: str = 'events'</em>, <em class="sig-param">batch_args: Optional[Tuple] = None</em>, <em class="sig-param">failed: Set[Event] = &lt;factory&gt;</em>, <em class="sig-param">finalized: anyio.abc.Event = &lt;factory&gt;</em>, <em class="sig-param">agen: AsyncIterator[Union[Event</em>, <em class="sig-param">List[Event]]] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/events.html#Events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Events" title="Permalink to this definition">¶</a></dt>
 <dd><p>An async generator which yields Events (or batches of them). This is the object
 passed to user-defined processor functions.</p>
 <p class="rubric">Examples</p>
@@ -568,7 +568,7 @@ into a Record type before it is acted upon: e.g. via <code class="docutils liter
 
 <dl class="py class">
 <dt id="runnel.Partition">
-<em class="property">class </em><code class="sig-prename descclassname">runnel.</code><code class="sig-name descname">Partition</code><span class="sig-paren">(</span><em class="sig-param">stream: Stream</em>, <em class="sig-param">number: int</em>, <em class="sig-param">pointer: bytes = b'0-0'</em>, <em class="sig-param">lock: anyio.abc.synchronization.Lock = &lt;factory&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/types.html#Partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Partition" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">runnel.</code><code class="sig-name descname">Partition</code><span class="sig-paren">(</span><em class="sig-param">stream: Stream</em>, <em class="sig-param">number: int</em>, <em class="sig-param">pointer: bytes = b'0-0'</em>, <em class="sig-param">lock: anyio.abc.Lock = &lt;factory&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/runnel/types.html#Partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#runnel.Partition" title="Permalink to this definition">¶</a></dt>
 <dd><p>The internal representation of a partition of the stream.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>

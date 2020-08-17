@@ -52,7 +52,7 @@ async def printer(events):
         print(f"processed {order.amount}")
 ```
 
-Meanwhile, run the worker (assuming code in `example.py`):
+Meanwhile, run the worker (assuming code in `example.py` and `PYTHONPATH` is set):
 ```bash
 $ runnel worker example:app
 ```
