@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "runnel"
-version = "0.1.0a3"
+version = "0.1.0a4"
 description = "Distributed event processing for Python based on Redis Streams"
 authors = ["Matt Westcott <m.westcott@gmail.com>"]
 license = "LGPLv3"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 aredis = "^1.1.8"
 hiredis = "^1.0.1"
 pydantic = "^1.5.1"
