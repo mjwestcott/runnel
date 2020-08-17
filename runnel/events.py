@@ -180,8 +180,6 @@ class Events:
         timeout = max(0.05, min(1, self.executor.processor.grace_period / 4))
 
         while self.partition in self.executor.safe_partitions:
-            # XXX: This pattern is currently broken in AnyIO master:
-            # https://github.com/agronholm/anyio/issues/146
             async with anyio.move_on_after(timeout) as scope:
                 event = await queue.get()
 
