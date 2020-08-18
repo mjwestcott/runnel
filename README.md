@@ -73,6 +73,6 @@ Designed to support a similar paradigm to Kafka Streams, but on top of Redis.
 
 ### Local development
 
-To run the test suite locally, install the optional deps (e.g. via `poetry install -E fast`)
-and run `pytest`. You'll need to have Redis running on localhost at port 6379.
-You can run the tests for all supported Python versions via `tox`.
+To run the test suite locally, clone the repo and install the optional deps
+(e.g. via `poetry install -E fast`). Make sure Redis is running on localhost at
+port 6379, then run `pytest`.
