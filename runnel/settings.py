@@ -66,8 +66,8 @@ class Settings(BaseSettings):
         experience since other executors will have to wait acquire the lock in case
         the owner has died. Default: ``120``.
     default_read_timeout : int (milliseconds)
-        How long to stay blocked reading from Redis via XREADGROUP. Nothing depends
-        on this. Default: ``4000``.
+        How long to stay blocked reading from Redis via XREADGROUP. Should be smaller
+        than the ``grace_period`` given to processors. Default: ``2000``.
     default_prefetch_count : int
         The maximum number of events to read from Redis per partition owned by an
         executor. (If a single executor owns all 16 partitions in a stream and
@@ -110,7 +110,7 @@ class Settings(BaseSettings):
     # Processor defaults
     default_exception_policy: ExceptionPolicy = ExceptionPolicy.HALT
     default_lock_expiry: int = 60 * 2
-    default_read_timeout: int = 4000
+    default_read_timeout: int = 2000
     default_prefetch_count: int = 8
     default_assignment_attempts: int = 32
     default_assignment_sleep: float = 2

@@ -220,8 +220,8 @@
 <span class="sd">        experience since other executors will have to wait acquire the lock in case</span>
 <span class="sd">        the owner has died. Default: ``120``.</span>
 <span class="sd">    default_read_timeout : int (milliseconds)</span>
-<span class="sd">        How long to stay blocked reading from Redis via XREADGROUP. Nothing depends</span>
-<span class="sd">        on this. Default: ``4000``.</span>
+<span class="sd">        How long to stay blocked reading from Redis via XREADGROUP. Should be smaller</span>
+<span class="sd">        than the ``grace_period`` given to processors. Default: ``2000``.</span>
 <span class="sd">    default_prefetch_count : int</span>
 <span class="sd">        The maximum number of events to read from Redis per partition owned by an</span>
 <span class="sd">        executor. (If a single executor owns all 16 partitions in a stream and</span>
@@ -264,7 +264,7 @@
     <span class="c1"># Processor defaults</span>
     <span class="n">default_exception_policy</span><span class="p">:</span> <span class="n">ExceptionPolicy</span> <span class="o">=</span> <span class="n">ExceptionPolicy</span><span class="o">.</span><span class="n">HALT</span>
     <span class="n">default_lock_expiry</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span>
-    <span class="n">default_read_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4000</span>
+    <span class="n">default_read_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000</span>
     <span class="n">default_prefetch_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
     <span class="n">default_assignment_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>
     <span class="n">default_assignment_sleep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span>
