@@ -158,7 +158,6 @@
 <span class="kn">import</span> <span class="nn">structlog</span>
 <span class="kn">from</span> <span class="nn">aredis</span> <span class="kn">import</span> <span class="n">StrictRedis</span>
 
-<span class="kn">from</span> <span class="nn">runnel</span> <span class="kn">import</span> <span class="n">context</span>
 <span class="kn">from</span> <span class="nn">runnel.exceptions</span> <span class="kn">import</span> <span class="n">Misconfigured</span>
 <span class="kn">from</span> <span class="nn">runnel.logging</span> <span class="kn">import</span> <span class="n">init_logging</span>
 <span class="kn">from</span> <span class="nn">runnel.processor</span> <span class="kn">import</span> <span class="n">Processor</span>
@@ -234,10 +233,6 @@
             <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">log_level</span><span class="p">,</span>
             <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">log_format</span><span class="p">,</span>
         <span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_leader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">is_leader</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
 <div class="viewcode-block" id="App.stream"><a class="viewcode-back" href="../../reference.html#runnel.App.stream">[docs]</a>    <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -438,7 +433,7 @@
 
         <span class="k">return</span> <span class="n">decorator</span></div>
 
-    <span class="k">def</span> <span class="nf">_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">on_leader</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">func</span>
@@ -467,8 +462,8 @@
 <span class="sd">        ...    print(f&quot;running once&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">on_leader</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leader</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">worker</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">on_leader</span> <span class="ow">or</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_leader</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;running-task&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
                     <span class="k">await</span> <span class="n">f</span><span class="p">()</span>
 
@@ -501,13 +496,14 @@
 <span class="sd">        ...     print(&quot;5 seconds passed on the leader&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">timer_spawner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">timer_spawner</span><span class="p">(</span><span class="n">worker</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">async</span> <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">create_task_group</span><span class="p">()</span> <span class="k">as</span> <span class="n">tg</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;background-timer-task&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
                     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                         <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">on_leader</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leader</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">on_leader</span> <span class="ow">or</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_leader</span><span class="p">:</span>
                             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;spawning-timer-task&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-                            <span class="k">await</span> <span class="n">tg</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                            <span class="k">await</span> <span class="n">tg</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;found-timer&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="p">(</span><span class="n">timer_spawner</span><span class="p">)</span>
@@ -548,14 +544,15 @@
 <span class="sd">        ...     print(&quot;It is 5:45pm in London&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">cron_spawner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">cron_spawner</span><span class="p">(</span><span class="n">worker</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">_tz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">timezone</span> <span class="k">if</span> <span class="n">timezone</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">timezone</span>
                 <span class="k">async</span> <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">create_task_group</span><span class="p">()</span> <span class="k">as</span> <span class="n">tg</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;background-cron-task&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
                     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                         <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">seconds_until</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">_tz</span><span class="p">))</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">on_leader</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leader</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">on_leader</span> <span class="ow">or</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_leader</span><span class="p">:</span>
                             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;spawning-cron-task&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-                            <span class="k">await</span> <span class="n">tg</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                            <span class="k">await</span> <span class="n">tg</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;found-cron&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="p">(</span><span class="n">cron_spawner</span><span class="p">)</span>

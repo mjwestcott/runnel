@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     testing : bool
         Whether we are currently running the test suite.
     default_serializer : Serializer
-        An object implementing the Serialzer interface which controls how records
+        An object implementing the Serializer interface which controls how records
         are stored in the Redis streams. Default: ``JSONSerialzer`` unless ``orjson`` is
         installed (use the ``runnel[fast]`` bundle to install automatically), in which
         case ``FastJSONSerializer``.
@@ -51,7 +51,7 @@ class Settings(BaseSettings):
     default_hasher: Callable[Any, int]
         A function used to hash a record's partition key to decide which partition to
         send it to. Defaults to md5 unless `xxhash` is installed (use the `runnel[fast]`
-        bundle to install automataically)
+        bundle to install automatically)
     default_exception_policy : ExceptionPolicy
         How to handle exceptions raised in the user-provided processor coroutine.
 

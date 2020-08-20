@@ -630,7 +630,7 @@ inside the ‘myproj’ folder. Default <code class="docutils literal notranslat
 <li><p><strong>timezone</strong> (<em>tzinfo</em>) – The timezone to use by default for <code class="docutils literal notranslate"><span class="pre">app.crontab</span></code> schedules. Default: <code class="docutils literal notranslate"><span class="pre">pytz.UTC</span></code>.</p></li>
 <li><p><strong>leadership_poll_interval</strong> (<em>int</em><em> (</em><em>milliseconds</em><em>)</em>) – How long to sleep between worker leadership election attempts. Default: <code class="docutils literal notranslate"><span class="pre">4000</span></code></p></li>
 <li><p><strong>testing</strong> (<em>bool</em>) – Whether we are currently running the test suite.</p></li>
-<li><p><strong>default_serializer</strong> (<a class="reference internal" href="#runnel.interfaces.Serializer" title="runnel.interfaces.Serializer"><em>Serializer</em></a>) – An object implementing the Serialzer interface which controls how records
+<li><p><strong>default_serializer</strong> (<a class="reference internal" href="#runnel.interfaces.Serializer" title="runnel.interfaces.Serializer"><em>Serializer</em></a>) – An object implementing the Serializer interface which controls how records
 are stored in the Redis streams. Default: <code class="docutils literal notranslate"><span class="pre">JSONSerialzer</span></code> unless <code class="docutils literal notranslate"><span class="pre">orjson</span></code> is
 installed (use the <code class="docutils literal notranslate"><span class="pre">runnel[fast]</span></code> bundle to install automatically), in which
 case <code class="docutils literal notranslate"><span class="pre">FastJSONSerializer</span></code>.</p></li>
@@ -640,7 +640,7 @@ option to XACK.) Represents the size of the buffer in case processors are
 offline or cannot keep up with the event rate. Default: <code class="docutils literal notranslate"><span class="pre">50_000</span></code>.</p></li>
 <li><p><strong>default_hasher</strong> (<em>Callable</em><em>[</em><em>Any</em><em>, </em><em>int</em><em>]</em>) – A function used to hash a record’s partition key to decide which partition to
 send it to. Defaults to md5 unless <cite>xxhash</cite> is installed (use the <cite>runnel[fast]</cite>
-bundle to install automataically)</p></li>
+bundle to install automatically)</p></li>
 <li><p><strong>default_exception_policy</strong> (<a class="reference internal" href="#runnel.constants.ExceptionPolicy" title="runnel.constants.ExceptionPolicy"><em>ExceptionPolicy</em></a>) – <p>How to handle exceptions raised in the user-provided processor coroutine.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">HALT</span></code>: Raise the exception, halting execution of the affected partition.</p></li>
