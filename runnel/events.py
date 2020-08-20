@@ -180,10 +180,12 @@ class Events:
         timeout = max(0.05, min(1, self.executor.processor.grace_period / 4))
 
         while self.partition in self.executor.safe_partitions:
-            async with anyio.move_on_after(timeout) as scope:
+            event = None
+
+            async with anyio.move_on_after(timeout):
                 event = await queue.get()
 
-            if not scope.cancel_called:
+            if event:
                 yield event
 
     @asynccontextmanager
