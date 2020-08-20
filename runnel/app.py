@@ -4,7 +4,6 @@ import anyio
 import structlog
 from aredis import StrictRedis
 
-from runnel import context
 from runnel.exceptions import Misconfigured
 from runnel.logging import init_logging
 from runnel.processor import Processor
@@ -80,10 +79,6 @@ class App:
             level=self.settings.log_level,
             format=self.settings.log_format,
         )
-
-    @property
-    def is_leader(self):
-        return context.is_leader.get()
 
     def stream(
         self,
@@ -284,7 +279,7 @@ class App:
 
         return decorator
 
-    def _task(self, func, on_leader=False):
+    def _task(self, func):
         def decorator(f):
             self.tasks.add(f)
             return func
@@ -313,7 +308,7 @@ class App:
         ...    print(f"running once")
         """
         def decorator(f):
-            async def wrapper():
+            async def wrapper(worker):
                 if not on_leader or self.is_leader:
                     logger.info("running-task", name=f.__name__)
                     await f()
@@ -347,14 +342,14 @@ class App:
         ...     print("5 seconds passed on the leader")
         """
         def decorator(f):
-            async def timer_spawner(*args) -> None:
+            async def timer_spawner(worker) -> None:
                 async with anyio.create_task_group() as tg:
                     logger.debug("background-timer-task", name=f.__name__)
                     while True:
                         await anyio.sleep(interval)
-                        if not on_leader or self.is_leader:
+                        if not on_leader or worker.is_leader:
                             logger.debug("spawning-timer-task", name=f.__name__)
-                            await tg.spawn(f, *args)
+                            await tg.spawn(f)
 
             logger.debug("found-timer", name=f.__name__)
             return self._task(timer_spawner)
@@ -395,15 +390,15 @@ class App:
         ...     print("It is 5:45pm in London")
         """
         def decorator(f):
-            async def cron_spawner(*args) -> None:
+            async def cron_spawner(worker) -> None:
                 _tz = self.settings.timezone if timezone is None else timezone
                 async with anyio.create_task_group() as tg:
                     logger.debug("background-cron-task", name=f.__name__)
                     while True:
                         await anyio.sleep(seconds_until(spec, _tz))
-                        if not on_leader or self.is_leader:
+                        if not on_leader or worker.is_leader:
                             logger.debug("spawning-cron-task", name=f.__name__)
-                            await tg.spawn(f, *args)
+                            await tg.spawn(f)
 
             logger.debug("found-cron", name=f.__name__)
             return self._task(cron_spawner)

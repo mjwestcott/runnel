@@ -29,6 +29,7 @@ class Worker:
     id: str = field(default_factory=base64uuid)
     executors: Set[Executor] = field(default_factory=set)
     started: bool = False
+    is_leader: bool = False
 
     def __hash__(self):
         return object.__hash__(self)
@@ -106,7 +107,7 @@ class Worker:
 
                     # Background tasks, e.g. timers, crontabs etc.
                     for t in self.app.tasks:
-                        await tg.spawn(t)
+                        await tg.spawn(t, self)
 
                     # Leadership polling.
                     await tg.spawn(self.elect_leader)
@@ -141,8 +142,8 @@ class Worker:
         leader = await fn.execute(keys=[self.leader_key], args=[self.id, px])
 
         if leader:
-            if not context.is_leader.get():
+            if not self.is_leader:
                 logger.info("new-leader")
-                context.is_leader.set(True)
+                self.is_leader = True
         else:
-            context.is_leader.set(False)
+            self.is_leader = False
