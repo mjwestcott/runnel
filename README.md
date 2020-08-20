@@ -76,3 +76,8 @@ Designed to support a similar paradigm to Kafka Streams, but on top of Redis.
 To run the test suite locally, clone the repo and install the optional deps
 (e.g. via `poetry install -E fast`). Make sure Redis is running on localhost at
 port 6379, then run `pytest`.
+
+### See also
+
+For a traditional task queue that doesn't provide ordering guarantees, see our
+sister project [Fennel](https://github.com/mjwestcott/fennel)
