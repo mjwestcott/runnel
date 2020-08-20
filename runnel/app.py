@@ -349,6 +349,7 @@ class App:
         def decorator(f):
             async def timer_spawner(*args) -> None:
                 async with anyio.create_task_group() as tg:
+                    logger.debug("background-timer-task", name=f.__name__)
                     while True:
                         await anyio.sleep(interval)
                         if not on_leader or self.is_leader:
@@ -397,6 +398,7 @@ class App:
             async def cron_spawner(*args) -> None:
                 _tz = self.settings.timezone if timezone is None else timezone
                 async with anyio.create_task_group() as tg:
+                    logger.debug("background-cron-task", name=f.__name__)
                     while True:
                         await anyio.sleep(seconds_until(spec, _tz))
                         if not on_leader or self.is_leader:
