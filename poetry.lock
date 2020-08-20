@@ -20,7 +20,7 @@ description = "High level compatibility layer for multiple asynchronous event lo
 name = "anyio"
 optional = false
 python-versions = ">=3.6.2"
-version = "2.0.0b1"
+version = "2.0.0b2"
 
 [package.dependencies]
 idna = ">=2.8"
@@ -804,7 +804,7 @@ version = "0.30.0"
 fast = ["uvloop", "xxhash", "orjson", "lz4"]
 
 [metadata]
-content-hash = "9fd1f8e92d4a7de08dd5bf6e71cfa8026822790391f569c563cd054885855a7a"
+content-hash = "9c7051221fc1ef268d1934c752c87c0f3cfbde77aed7e129dd4907369e51bb75"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -816,8 +816,8 @@ alabaster = [
     {file = "alabaster-0.7.12.tar.gz", hash = "sha256:a661d72d58e6ea8a57f7a86e37d86716863ee5e92788398526d58b26a4e4dc02"},
 ]
 anyio = [
-    {file = "anyio-2.0.0b1-py3-none-any.whl", hash = "sha256:215983bbc5e5d80a4bc1ab4d35906372c69479d4d97f2c661cd5c872f129498e"},
-    {file = "anyio-2.0.0b1.tar.gz", hash = "sha256:a208c12fa4474c407cfd92fae2c0c23fe3e587acfdf470e2f9e8098be2ce995a"},
+    {file = "anyio-2.0.0b2-py3-none-any.whl", hash = "sha256:a2ad4f2206054aea56b245ddd2029bb5507fa345f351012fb6bfd54402791fa1"},
+    {file = "anyio-2.0.0b2.tar.gz", hash = "sha256:32cb7e7f67347b02a9387d4413bd84f2288b0dbf31c2c175c01916dc4951a21e"},
 ]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
