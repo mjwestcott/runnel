@@ -309,7 +309,7 @@ class App:
         """
         def decorator(f):
             async def wrapper(worker):
-                if not on_leader or self.is_leader:
+                if not on_leader or worker.is_leader:
                     logger.info("running-task", name=f.__name__)
                     await f()
 
