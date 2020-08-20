@@ -191,8 +191,8 @@ Raw events
             print(order.amount)
 
 
-If you want access to the low-level :attr`runnel.Event` object, you can omit
-the ``.records()`` call and iterate over the events directly.
+If you want access to the low-level :attr:`runnel.Event` object, you can omit the
+``.records()`` call and iterate over the events directly.
 
 
 Batching
