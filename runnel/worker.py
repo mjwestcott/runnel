@@ -98,7 +98,7 @@ class Worker:
 
         self.app.workers.add(self)
         try:
-            async with anyio.open_signal_receiver(signal.SIGINT) as signals:
+            async with anyio.open_signal_receiver(signal.SIGINT, signal.SIGTERM) as signals:
                 async with anyio.create_task_group() as tg:
                     # The main executor tasks.
                     for e in self.executors:
@@ -112,12 +112,11 @@ class Worker:
                     await tg.spawn(self.elect_leader)
                     self.started = True
 
-                    # Allow for graceful shutdown on SIGINT.
+                    # Allow for graceful shutdown.
                     async for signum in signals:
-                        if signum == signal.SIGINT:
-                            logger.critical("sigint")
-                            await tg.cancel_scope.cancel()
-                            return
+                        logger.critical("signal-received", signum=signum)
+                        await tg.cancel_scope.cancel()
+                        return
         finally:
             self.app.workers.remove(self)
             if not self.app.workers:
