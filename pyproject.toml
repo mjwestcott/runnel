@@ -2,8 +2,10 @@
 name = "runnel"
 version = "0.1.0a4"
 description = "Distributed event processing for Python based on Redis Streams"
+readme = "README.md"
+keywords = ["data", "stream", "processing", "redis", "async"]
 authors = ["Matt Westcott <m.westcott@gmail.com>"]
-license = "LGPLv3"
+license = "LGPL-3.0-only"
 
 [tool.poetry.dependencies]
 python = "^3.8"
