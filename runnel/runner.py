@@ -79,11 +79,8 @@ class Runner:
                 yield
             finally:
                 logger.debug("consumer-cleanup")
-                # Reset the partition's pointer so that the next task to take ownership
-                # starts by reading the pending entries list. This is necessary because
-                # any events we have prefetched and are currently queued up will be
-                # deleted in the next line.
-                partition.reset()
+                # Remove the partition from the set managed by this Runner. This will
+                # cause any pending fetches to abort when they complete.
                 del self.partitions[partition]
 
                 # Wait until any pending fetches for the partition complete. Otherwise,
@@ -94,6 +91,11 @@ class Runner:
                 # the events read by this fetcher.
                 while partition in self.fetching:
                     await self.fetch_completed.wait()
+
+                # Reset the partition's pointer so that the next task to take ownership
+                # starts by reading the pending entries list. This is necessary because
+                # we may have read, but not processed, some events.
+                partition.reset()
 
                 # Notify any waiting tasks that we are about to exit and relinquish our
                 # run lock.
