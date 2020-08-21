@@ -166,6 +166,7 @@ class Executor:
 
     async def _message_consumer(self, receive_stream):
         attempts = 0
+        limit = self.processor.assignment_attempts
 
         while True:
             # Wait for a control message from the queue, but proceed anyway
@@ -185,7 +186,7 @@ class Executor:
                 # has been added since we read it) or the current owner has not released
                 # it yet, so we cannot acquire the locks for our declared partitions.
                 attempts += 1
-                if attempts >= self.processor.assignment_attempts:
+                if attempts >= limit:
                     # Either our partition assignment is incorrect or another worker is
                     # failing to respond to control messages to release its partition
                     # locks. Give up, killing this process.
@@ -194,7 +195,7 @@ class Executor:
                 else:
                     # It's likely that the current owner is still processing its backlog
                     # of events and will release it soon.
-                    logger.warning("could-not-acquire")
+                    logger.info("retrying-acquisition", attempts=attempts, limit=limit)
             else:
                 if completed:
                     logger.info("rebalance-completed")

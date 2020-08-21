@@ -80,4 +80,4 @@ port 6379, then run `pytest`.
 ### See also
 
 For a traditional task queue that doesn't provide ordering guarantees, see our
-sister project [Fennel](https://github.com/mjwestcott/fennel)
+sister project [Fennel](https://github.com/mjwestcott/fennel).

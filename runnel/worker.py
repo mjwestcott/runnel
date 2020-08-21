@@ -122,7 +122,7 @@ class Worker:
             self.app.workers.remove(self)
             if not self.app.workers:
                 self.app.redis.connection_pool.disconnect()
-            logger.critical("worker-exit", eids=[e.id for e in self.executors])
+            logger.critical("worker-exit", executor_ids=[e.id for e in self.executors])
 
     async def elect_leader(self):
         # Poll a key in Redis and elect ourselves the leader if one does not exist. Not
