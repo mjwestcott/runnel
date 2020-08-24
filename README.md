@@ -71,6 +71,22 @@ Designed to support a similar paradigm to Kafka Streams, but on top of Redis.
 * A builtin batching mechanism to efficiently process events in bulk
 * A `runnel[fast]` bundle for C or Rust extension dependencies ([uvloop](https://github.com/MagicStack/uvloop), [xxhash](https://github.com/Cyan4973/xxHash), [orjson](https://github.com/ijl/orjson), [lz4](https://github.com/python-lz4/python-lz4))
 
+### Documentation
+
+Full documenation is available at https://runnel.dev.
+
+* [Guide](https://runnel.dev/guide.html)
+* [Motivation](https://runnel.dev/motivation.html)
+* [Architecture](https://runnel.dev/architecture.html)
+* [API Reference](https://runnel.dev/reference.html)
+
+### Blog posts
+
+Essays about this project or the technology it's using:
+
+* [Redis streams vs. Kafka](https://mattwestcott.co.uk/blog/redis-streams-vs-kafka)
+* [Structured concurrency in Python with AnyIO](https://mattwestcott.co.uk/blog/structured-concurrency-in-python-with-anyio)
+
 ### Local development
 
 To run the test suite locally, clone the repo and install the optional deps
