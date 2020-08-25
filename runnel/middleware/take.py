@@ -21,6 +21,7 @@ class Take(Middleware):
             await tg.spawn(self._producer, parent, send_stream, produced, consumed)
 
             while True:
+                logger.debug("take-loop")
                 async with anyio.move_on_after(self.within):
                     await produced.wait()
 
@@ -29,8 +30,8 @@ class Take(Middleware):
                         yield await self._consume(receive_stream)
                     except GeneratorExit:
                         # https://github.com/python-trio/trio/issues/638#issuecomment-418588615
-                        await tg.cancel_scope.cancel()
                         logger.warning("take-middleware-exit")
+                        await tg.cancel_scope.cancel()
                         return
 
                 await consumed.set()
