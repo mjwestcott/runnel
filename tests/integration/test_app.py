@@ -12,7 +12,6 @@ class Action(Record, primitive=True):
     seq: int
 
 
-@pytest.mark.asyncio
 async def test_simple(app, results):
     n_events = 10
     actions = app.stream(
@@ -37,7 +36,6 @@ async def test_simple(app, results):
         await wait_done(results, count=n_events, delay=10, debug_key=event_id)
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("partition_count", [1, 8])
 @pytest.mark.parametrize("prefetch_count", [1, 50])
 @pytest.mark.parametrize("batch_size", [1, 24])

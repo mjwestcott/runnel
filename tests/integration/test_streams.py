@@ -1,5 +1,3 @@
-import pytest
-
 from runnel.record import Record
 from tests.helpers.waiting import wait_done
 from tests.helpers.worker import workers
@@ -15,7 +13,6 @@ class Filtered(Record):
     seq: int
 
 
-@pytest.mark.asyncio
 async def test_streams(app, results):
     keys = list("ABCDEFGHIJ")
     n_workers = 2

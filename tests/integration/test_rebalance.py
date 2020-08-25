@@ -13,7 +13,6 @@ class Action(Record, primitive=True):
     seq: int
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("batch_size", [1, 11])
 async def test_sequential(app, results, batch_size):
     seq = count()

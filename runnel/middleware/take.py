@@ -21,7 +21,6 @@ class Take(Middleware):
             await tg.spawn(self._producer, parent, send_stream, produced, consumed)
 
             while True:
-                logger.debug("take-loop")
                 async with anyio.move_on_after(self.within):
                     await produced.wait()
 

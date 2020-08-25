@@ -3,7 +3,6 @@ import pytest
 from runnel.exceptions import Misconfigured
 
 
-@pytest.mark.asyncio
 async def test_name(app, stream):
     @app.processor(stream)
     async def foo(events):

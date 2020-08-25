@@ -1,11 +1,8 @@
 import asyncio
 
-import pytest
-
 from runnel.concurrency import race
 
 
-@pytest.mark.asyncio
 async def test_race():
     async def coro1(duration):
         await asyncio.sleep(duration)

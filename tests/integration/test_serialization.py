@@ -7,7 +7,6 @@ from tests.helpers.waiting import wait_done
 from tests.helpers.worker import worker
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("serializer", [JSONSerializer(), FastJSONSerializer()])
 async def test_builtin(app, results, serializer):
     orders = app.stream(
@@ -28,7 +27,6 @@ async def test_builtin(app, results, serializer):
         await wait_done(results, count=10)
 
 
-@pytest.mark.asyncio
 async def test_primitive(app, results):
     with pytest.raises(Misconfigured):
         # Cannot serialize primitive records.

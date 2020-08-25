@@ -15,7 +15,6 @@ class Action(Record, primitive=True):
 
 
 @pytest.mark.slow
-@pytest.mark.asyncio
 @pytest.mark.parametrize("n_workers", [1, 16])
 async def test_many_partitions(results, n_workers):
     """

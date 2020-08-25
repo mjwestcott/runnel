@@ -22,6 +22,12 @@ def pytest_runtest_setup(item):
         pytest.skip("need --runslow option to run")
 
 
+# https://anyio.readthedocs.io/en/latest/testing.html
+@pytest.fixture(autouse=True)
+def anyio_backend():
+    return ('asyncio', {'use_uvloop': True})
+
+
 @pytest.fixture(scope="session")
 def seq():
     return count()
