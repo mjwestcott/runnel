@@ -184,6 +184,8 @@ class Events:
         timeout = max(0.05, min(1, self.executor.processor.grace_period / 4))
 
         while self.partition in self.executor.safe_partitions:
+            safe = [p.number for p in self.executor.safe_partitions]
+            logger.debug("root", timeout=timeout, p=self.partition.number, safe=safe)
             event = None
 
             async with anyio.move_on_after(timeout):
