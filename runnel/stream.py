@@ -49,11 +49,11 @@ class Stream:
     def id(self):
         return f"{self.app.name}.{self.name}"
 
-    @lru_cache
+    @lru_cache(maxsize=None)
     def partition_key(self, i):
         return f"__strm:{self.id}.{i}"
 
-    @lru_cache
+    @lru_cache()
     def all_partition_keys(self):
         return [self.partition_key(i) for i in range(0, self.partition_count)]
 

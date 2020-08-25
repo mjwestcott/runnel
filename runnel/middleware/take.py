@@ -27,8 +27,8 @@ class Take(Middleware):
                 while receive_stream._state.buffer:
                     try:
                         yield await self._consume(receive_stream)
-                    # https://github.com/python-trio/trio/issues/638#issuecomment-418588615
                     except GeneratorExit:
+                        # https://github.com/python-trio/trio/issues/638#issuecomment-418588615
                         await tg.cancel_scope.cancel()
                         logger.warning("take-middleware-exit")
                         return

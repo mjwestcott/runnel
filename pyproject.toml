@@ -8,7 +8,7 @@ authors = ["Matt Westcott <m.westcott@gmail.com>"]
 license = "LGPL-3.0-only"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 aredis = "^1.1.8"
 hiredis = "^1.0.1"
 pydantic = "^1.5.1"

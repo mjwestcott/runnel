@@ -327,17 +327,23 @@
 
                 <span class="c1"># It begins.</span>
                 <span class="k">async</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">agen</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="n">x</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">yield</span> <span class="n">x</span>
+                    <span class="k">except</span> <span class="ne">GeneratorExit</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;events-iter-exit&quot;</span><span class="p">)</span>
+                        <span class="k">return</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runner</span><span class="o">.</span><span class="n">partitions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">partition</span><span class="p">]</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">grace_period</span> <span class="o">/</span> <span class="mi">4</span><span class="p">))</span>
 
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">partition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="o">.</span><span class="n">safe_partitions</span><span class="p">:</span>
-            <span class="k">async</span> <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">scope</span><span class="p">:</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">async</span> <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">timeout</span><span class="p">):</span>
                 <span class="n">event</span> <span class="o">=</span> <span class="k">await</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">scope</span><span class="o">.</span><span class="n">cancel_called</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">event</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">event</span>
 
     <span class="nd">@asynccontextmanager</span>

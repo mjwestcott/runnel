@@ -77,7 +77,7 @@ class Processor:
     def members_key(self):
         return f"__memb:{self.id}"
 
-    @lru_cache
+    @lru_cache()
     def heartbeat_key(self, executor_id):
         return f"__beat:{self.id}.{executor_id}"
 
