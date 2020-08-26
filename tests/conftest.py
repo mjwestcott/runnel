@@ -25,7 +25,7 @@ def pytest_runtest_setup(item):
 # https://anyio.readthedocs.io/en/latest/testing.html
 @pytest.fixture(autouse=True)
 def anyio_backend():
-    return ('asyncio', {'use_uvloop': True})
+    return ("asyncio", {"use_uvloop": True})
 
 
 @pytest.fixture(scope="session")
@@ -71,5 +71,5 @@ def stream(app):
 
 
 @pytest.fixture
-def results(redis):
-    return Results(redis)
+def results(app):
+    return Results(app.redis)
