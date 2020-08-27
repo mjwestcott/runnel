@@ -11,7 +11,6 @@ from tests.helpers.waiting import wait_done
 from tests.helpers.worker import worker
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("primitive", [True, False])
 async def test_middleware(app, results, primitive):
     class Action(Record, primitive=primitive):
@@ -45,7 +44,6 @@ async def test_middleware(app, results, primitive):
         await wait_done(results, count=1)
 
 
-@pytest.mark.asyncio
 async def test_middleware_batches(app, results):
     class Action(Record, primitive=True):
         key: str

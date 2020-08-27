@@ -173,7 +173,11 @@ class Events:
 
                 # It begins.
                 async for x in agen:
-                    yield x
+                    try:
+                        yield x
+                    except GeneratorExit:
+                        logger.warning("events-iter-exit")
+                        return
 
     async def root(self):
         queue = self.runner.partitions[self.partition]

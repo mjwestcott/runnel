@@ -1,10 +1,8 @@
 import anyio
-import pytest
 
 from runnel.concurrency import WatermarkQueue
 
 
-@pytest.mark.asyncio
 async def test_queue():
     watermark = 8
     q = WatermarkQueue(watermark, direction="lt")
@@ -22,7 +20,6 @@ async def test_queue():
     assert q.qsize() > watermark
 
 
-@pytest.mark.asyncio
 async def test_queue_with_consumer():
     watermark = 8
     q = WatermarkQueue(watermark, direction="lt")

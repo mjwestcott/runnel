@@ -1,7 +1,6 @@
 import asyncio
 
 import anyio
-import pytest
 
 from runnel import App, context
 from tests.helpers.processes import subprocess
@@ -10,7 +9,6 @@ from tests.helpers.waiting import wait_atleast, wait_done, wait_started
 from tests.helpers.worker import workers
 
 
-@pytest.mark.asyncio
 async def test_task(app, results):
     @app.task(on_leader=True)
     async def incr():
@@ -26,7 +24,6 @@ async def test_task(app, results):
         assert len(await results.values()) == 1
 
 
-@pytest.mark.asyncio
 async def test_timer(app, results):
     @app.timer(interval=0.01, on_leader=True)
     async def incr():
@@ -42,7 +39,6 @@ async def test_timer(app, results):
         assert len(await results.values()) == 1
 
 
-@pytest.mark.asyncio
 async def test_crontab(mocker, app, results):
     mocked_seconds_until = mocker.patch("runnel.app.seconds_until")
     mocked_seconds_until.return_value = 0.01
@@ -74,7 +70,6 @@ async def task():
     await results.set(context.worker_id.get(), True)
 
 
-@pytest.mark.asyncio
 async def test_tasks_continue_after_leader_change(results):
     """
     Ensure that existing workers can become leader and continue processing background

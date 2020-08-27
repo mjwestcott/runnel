@@ -14,4 +14,4 @@ be installed separately (`uvloop <https://github.com/MagicStack/uvloop>`_, `xxha
 
     pip install runnel[fast]
 
-Runnel requires Python 3.8+
+Runnel requires Python 3.7+

@@ -37,7 +37,7 @@ class Record(BaseModel):
         """
         super().__init__(*args, **kwargs)
 
-    def __init_subclass__(cls, /, primitive=False, **kwargs):
+    def __init_subclass__(cls, *, primitive=False, **kwargs):
         super().__init_subclass__(**kwargs)
         cls._primitive = primitive
 

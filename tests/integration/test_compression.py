@@ -7,7 +7,6 @@ from tests.helpers.waiting import wait_done
 from tests.helpers.worker import worker
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("compressor", [Gzip(), LZ4()])
 async def test_builtin(app, results, compressor):
     orders = app.stream(

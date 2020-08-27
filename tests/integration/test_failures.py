@@ -15,7 +15,6 @@ class Action(Record, primitive=True):
     seq: int
 
 
-@pytest.mark.asyncio
 async def test_policy_halt(app, results):
     seq = count()
     keys = list("ABCDEFGHIJ")
@@ -33,7 +32,6 @@ async def test_policy_halt(app, results):
             await anyio.sleep(1)
 
 
-@pytest.mark.asyncio
 async def test_policy_quarantine(app, results):
     seq = count()
     keys = ["A", "B"]
@@ -65,7 +63,6 @@ async def test_policy_quarantine(app, results):
         await wait_done(results, count=55 + (45 // 2), debug_key=event_id)
 
 
-@pytest.mark.asyncio
 async def test_policy_ignore(app, results):
     seq = count()
     keys = list("ABCDEFGHIJ")

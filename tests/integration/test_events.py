@@ -6,7 +6,6 @@ from tests.helpers.waiting import wait_done
 from tests.helpers.worker import worker
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("want", ["raw", "records"])
 async def test_single_primitive(app, results, want):
     readings = app.stream("readings", record=Reading, partition_by="id")
@@ -27,7 +26,6 @@ async def test_single_primitive(app, results, want):
         await wait_done(results, count=2)
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("want", ["raw", "records"])
 async def test_single_complex(app, results, want):
     orders = app.stream("orders", record=Order, partition_by="id")
@@ -49,7 +47,6 @@ async def test_single_complex(app, results, want):
         await wait_done(results, count=2)
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("want", ["raw", "records"])
 async def test_batch_primitive(app, results, want):
     readings = app.stream("readings", record=Reading, partition_by="id", partition_count=1)
@@ -74,7 +71,6 @@ async def test_batch_primitive(app, results, want):
         await wait_done(results, count=4)
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("want", ["raw", "records"])
 async def test_batch_complex(app, results, want):
     orders = app.stream("orders", record=Order, partition_by="id", partition_count=1)

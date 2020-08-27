@@ -1,8 +1,6 @@
 import random
 from itertools import count
 
-import pytest
-
 from runnel import App
 from runnel.record import Record
 from tests.helpers.processes import subprocess
@@ -38,7 +36,6 @@ async def proc(events):
         await results.redis.incr(event_id(obj.seq))
 
 
-@pytest.mark.asyncio
 async def test_recovery(results):
     """
     Ensure that a new worker can acquire the locks left over from the dead one and

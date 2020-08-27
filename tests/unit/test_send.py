@@ -21,19 +21,16 @@ async def _read(stream):
         return result
 
 
-@pytest.mark.asyncio
 async def test_send(stream):
     await stream.send(Order.random())
     assert len(await _read(stream)) == 1
 
 
-@pytest.mark.asyncio
 async def test_sendmany(stream):
     await stream.send(*[Order.random() for _ in range(10)])
     assert len(await _read(stream)) == 10
 
 
-@pytest.mark.asyncio
 async def test_sendmany_with_ids(stream):
     orders = [Order.random() for _ in range(3)]
     stream_ids = ["1-1", "1-2", "1-3"]

@@ -15,7 +15,6 @@ class Action(Record, primitive=True):
 
 
 @pytest.mark.slow
-@pytest.mark.asyncio
 async def test_no_join_delay(results):
     """
     With no join delay, the first executor to join will acquire all partitions and then

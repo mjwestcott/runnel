@@ -1,8 +1,6 @@
 import asyncio
 from itertools import count
 
-import pytest
-
 from runnel.record import Record
 from tests.helpers.waiting import wait_done
 from tests.helpers.worker import worker
@@ -13,7 +11,6 @@ class Action(Record, primitive=True):
     seq: int
 
 
-@pytest.mark.asyncio
 async def test_backpressure(app, results):
     """
     Ensure that a single slow partition processor does not block others.
