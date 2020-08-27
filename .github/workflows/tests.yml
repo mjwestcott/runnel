@@ -7,12 +7,21 @@ on:
   pull_request:
 
 jobs:
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - run: pip install mypy
+    - run: mypy runnel
+
   tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7, 3.8]
-
     services:
       redis:
         image: redis
@@ -23,7 +32,6 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
-
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -35,8 +43,22 @@ jobs:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
       - run: poetry install -E fast
-      - run: poetry run pytest
+      - run: poetry run coverage run -m pytest
         env:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           RUNNEL_LOG_LEVEL: debug
+    - uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        flag-name: run-${{ matrix.test-name }}
+        parallel: true
+
+  coveralls:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        parallel-finished: true
