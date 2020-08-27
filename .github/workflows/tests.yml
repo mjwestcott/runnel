@@ -48,17 +48,20 @@ jobs:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           RUNNEL_LOG_LEVEL: debug
-      - uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          flag-name: run-${{ matrix.test-name }}
-          parallel: true
+      - run: poetry run coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_FLAG_NAME: ${{ matrix.test-name }}
+          COVERALLS_PARALLEL: true
 
   coveralls:
     needs: tests
     runs-on: ubuntu-latest
+    container: python:3-slim
     steps:
-    - uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
+    - name: Finished
+      run: |
+        pip install coveralls
+        coveralls --finish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
