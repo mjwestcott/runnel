@@ -43,7 +43,7 @@ jobs:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
       - run: poetry install -E fast
-      - run: poetry run coverage run -m pytest
+      - run: poetry run coverage run --source=runnel -m pytest
         env:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
