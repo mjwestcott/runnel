@@ -1,6 +1,12 @@
-## Runnel
+# Runnel
 
-Distributed event processing for Python based on Redis Streams.
+[![pyversions](https://img.shields.io/pypi/pyversions/runnel.svg)](https://pypi.python.org/pypi/runnel/)
+[![LGPLv3](https://img.shields.io/badge/License-LGPLv3-blue.svg)](https://github.com/mjwestcott/runnel/blob/master/LICENSE)
+[![version](https://img.shields.io/pypi/v/runnel.svg)](https://pypi.python.org/pypi/runnel/)
+[![coverage](https://img.shields.io/coveralls/github/mjwestcott/runnel)](https://coveralls.io/github/mjwestcott/runnel)
+[![tests](https://img.shields.io/github/workflow/status/mjwestcott/runnel/Tests)](https://github.com/mjwestcott/runnel/actions?query=workflow%3ATests)
+
+**Distributed event processing for Python based on Redis Streams.**
 
 https://runnel.dev
 
