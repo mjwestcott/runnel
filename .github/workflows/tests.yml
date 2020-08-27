@@ -48,11 +48,11 @@ jobs:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           RUNNEL_LOG_LEVEL: debug
-    - uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        flag-name: run-${{ matrix.test-name }}
-        parallel: true
+      - uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: run-${{ matrix.test-name }}
+          parallel: true
 
   coveralls:
     needs: test
